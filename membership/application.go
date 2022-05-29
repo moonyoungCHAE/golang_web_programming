@@ -11,3 +11,7 @@ func NewApplication(repository Repository) *Application {
 func (app *Application) Create(request CreateRequest) (CreateResponse, error) {
 	return CreateResponse{"1", "naver"}, nil
 }
+
+func (app *Application) Update(request UpdateRequest) (UpdateResponse, error) {
+	return UpdateResponse{}, nil
+}
