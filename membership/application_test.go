@@ -31,3 +31,29 @@ func TestCreateMembership(t *testing.T) {
 
 	})
 }
+
+func TestUpdate(t *testing.T) {
+	t.Run("membership 정보를 갱신한다.", func(t *testing.T) {
+
+	})
+
+	t.Run("수정하려는 사용자의 이름이 이미 존재하는 사용자 이름이라면 예외 처리한다.", func(t *testing.T) {
+
+	})
+
+	t.Run("멤버십 아이디를 입력하지 않은 경우, 예외 처리한다.", func(t *testing.T) {
+
+	})
+
+	t.Run("사용자 이름을 입력하지 않은 경우, 예외 처리한다.", func(t *testing.T) {
+
+	})
+
+	t.Run("멤버쉽 타입을 입력하지 않은 경우, 예외 처리한다.", func(t *testing.T) {
+
+	})
+
+	t.Run("주어진 멤버쉽 타입이 아닌 경우, 예외 처리한다.", func(t *testing.T) {
+
+	})
+}
