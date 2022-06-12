@@ -15,3 +15,7 @@ func (app *Application) Create(request CreateRequest) (CreateResponse, error) {
 func (app *Application) Update(request UpdateRequest) (UpdateResponse, error) {
 	return UpdateResponse{}, nil
 }
+
+func (app *Application) Delete(id string) error {
+	return nil
+}
