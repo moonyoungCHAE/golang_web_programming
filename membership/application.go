@@ -126,3 +126,7 @@ func isDuplicateName(data map[string]Membership, userName string) bool {
 func (app *Application) Update(request UpdateRequest) (UpdateResponse, error) {
 	return UpdateResponse{}, nil
 }
+
+func (app *Application) Delete(id string) error {
+	return nil
+}
