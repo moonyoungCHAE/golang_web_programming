@@ -16,58 +16,117 @@ func TestCreateMembership(t *testing.T) {
 	})
 
 	t.Run("이미 등록된 사용자 이름이 존재할 경우 실패한다.", func(t *testing.T) {
-
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+		_, _ = app.Create(CreateRequest{"jenny", "naver"})
+		_, err := app.Create(CreateRequest{"jenny", "payco"})
+		assert.NotNil(t, err)
 	})
 
 	t.Run("사용자 이름을 입력하지 않은 경우 실패한다.", func(t *testing.T) {
-
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+		_, err := app.Create(CreateRequest{"", "payco"})
+		assert.NotNil(t, err)
 	})
 
 	t.Run("멤버십 타입을 입력하지 않은 경우 실패한다.", func(t *testing.T) {
-
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+		_, err := app.Create(CreateRequest{"jenny", ""})
+		assert.NotNil(t, err)
 	})
 
 	t.Run("naver/toss/payco 이외의 타입을 입력한 경우 실패한다.", func(t *testing.T) {
-
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+		_, err := app.Create(CreateRequest{"jenny", "paybook"})
+		assert.NotNil(t, err)
 	})
 }
 
-func TestUpdate(t *testing.T) {
-	t.Run("membership 정보를 갱신한다.", func(t *testing.T) {
+var testName, testType = " tester", "toss"
 
+func TestUpdate(t *testing.T) {
+
+	t.Run("membership 정보를 갱신한다.", func(t *testing.T) {
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+		createResponse, _ := app.Create(CreateRequest{testName, testType})
+
+		req := UpdateRequest{createResponse.ID, "ray", "payco"}
+		res, err := app.Update(req)
+
+		assert.Nil(t, err)
+		assert.Equal(t, req.MembershipType, res.MembershipType)
+		assert.Equal(t, req.UserName, res.UserName)
+		assert.Equal(t, req.ID, res.ID)
 	})
 
 	t.Run("수정하려는 사용자의 이름이 이미 존재하는 사용자 이름이라면 예외 처리한다.", func(t *testing.T) {
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+		createResponse, _ := app.Create(CreateRequest{testName, testType})
 
+		req := UpdateRequest{createResponse.ID, "ray", "payco"}
+		_, err := app.Update(req)
+		assert.NotNil(t, err)
 	})
 
 	t.Run("멤버십 아이디를 입력하지 않은 경우, 예외 처리한다.", func(t *testing.T) {
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+		_, _ = app.Create(CreateRequest{testName, testType})
 
+		req := UpdateRequest{"", "ray", "payco"}
+		_, err := app.Update(req)
+		assert.NotNil(t, err)
 	})
 
 	t.Run("사용자 이름을 입력하지 않은 경우, 예외 처리한다.", func(t *testing.T) {
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+		createResponse, _ := app.Create(CreateRequest{testName, testType})
 
+		req := UpdateRequest{createResponse.ID, "", "payco"}
+		_, err := app.Update(req)
+		assert.NotNil(t, err)
 	})
 
 	t.Run("멤버쉽 타입을 입력하지 않은 경우, 예외 처리한다.", func(t *testing.T) {
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+		createResponse, _ := app.Create(CreateRequest{testName, testType})
 
+		req := UpdateRequest{createResponse.ID, "ray", ""}
+		_, err := app.Update(req)
+		assert.NotNil(t, err)
 	})
 
 	t.Run("주어진 멤버쉽 타입이 아닌 경우, 예외 처리한다.", func(t *testing.T) {
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+		createResponse, _ := app.Create(CreateRequest{testName, testType})
 
+		req := UpdateRequest{createResponse.ID, "ray", "paybook"}
+		_, err := app.Update(req)
+		assert.NotNil(t, err)
 	})
 }
 
 func TestDelete(t *testing.T) {
-	t.Run("멤버십을 삭제한다.", func(t *testing.T) {
 
+	t.Run("멤버십을 삭제한다.", func(t *testing.T) {
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+		createResponse, _ := app.Create(CreateRequest{testName, testType})
+
+		err := app.Delete(createResponse.ID)
+		assert.Nil(t, err)
 	})
 
 	t.Run("id를 입력하지 않았을 때 예외 처리한다.", func(t *testing.T) {
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+		_, _ = app.Create(CreateRequest{testName, testType})
 
+		err := app.Delete("")
+		assert.NotNil(t, err)
 	})
 
 	t.Run("입력한 id가 존재하지 않을 때 예외 처리한다.", func(t *testing.T) {
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+		_, _ = app.Create(CreateRequest{testName, testType})
+		err := app.Delete("nonexists")
 
+		assert.NotNil(t, err)
 	})
 }
