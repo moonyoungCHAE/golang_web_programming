@@ -130,3 +130,7 @@ func (app *Application) Update(request UpdateRequest) (UpdateResponse, error) {
 func (app *Application) Delete(id string) error {
 	return nil
 }
+
+func (app *Application) Read(id string) (ReadResponse, error) {
+	return ReadResponse{}, nil
+}
