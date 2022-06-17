@@ -71,7 +71,7 @@ func TestUpdate(t *testing.T) {
 		app := NewApplication(*NewRepository(map[string]Membership{}))
 		createResponse, _ := app.Create(CreateRequest{testName, testType})
 
-		req := UpdateRequest{createResponse.ID, "tester", "payco"}
+		req := UpdateRequest{createResponse.ID, "ray", "payco"}
 		_, err := app.Update(req)
 		log.Println(err)
 		assert.NotNil(t, err)
