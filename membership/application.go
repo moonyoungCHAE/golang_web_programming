@@ -69,18 +69,48 @@ func (app *Application) Update(request UpdateRequest) (UpdateResponse, error) {
 	// Memory DB에 수정
 	app.repository.data[request.ID] = Membership{ID: request.ID, UserName: request.UserName, MembershipType: request.MembershipType}
 
-	res := app.repository.data[request.ID]
+	res, exists := app.repository.data[request.ID]
+	if !exists {
+		return UpdateResponse{}, errors.New("[update] after update, key is invalid")
+	}
 	fmt.Println(res)
 
 	return UpdateResponse{res.ID, res.UserName, res.MembershipType}, nil
 }
 
 func (app *Application) Delete(id string) error {
+
+	// 파라미터 검증
+	if id == "" {
+		return errors.New("[delete] ID is not entered")
+	}
+
+	// id 존재 여부 확인
+	if _, exists := app.repository.data[id]; !exists {
+		return errors.New("[delete] ID is invalid (non-exists)")
+	}
+
+	// Memory DB에 삭제
+	delete(app.repository.data, id)
+
 	return nil
 }
 
 func (app *Application) Read(id string) (ReadResponse, error) {
-	return ReadResponse{}, nil
+
+	// 파라미터 검증
+	if id == "" {
+		return ReadResponse{}, errors.New("[read] ID is not entered")
+	}
+
+	var membership, exists = app.repository.data[id]
+
+	// id 존재 여부 확인
+	if !exists {
+		return ReadResponse{}, errors.New("[read] ID is invalid (non-exists)")
+	}
+
+	return ReadResponse{membership.ID, membership.UserName, membership.MembershipType}, nil
 }
 
 // isDuplicateName returns a bool value whether if username is duplicated or not
