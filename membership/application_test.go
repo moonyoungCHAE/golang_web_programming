@@ -2,6 +2,7 @@ package membership
 
 import (
 	"github.com/stretchr/testify/assert"
+	"log"
 	"testing"
 )
 
@@ -10,6 +11,8 @@ func TestCreateMembership(t *testing.T) {
 		app := NewApplication(*NewRepository(map[string]Membership{}))
 		req := CreateRequest{"jenny", "naver"}
 		res, err := app.Create(req)
+
+		log.Println(err)
 		assert.Nil(t, err)
 		assert.NotEmpty(t, res.ID)
 		assert.Equal(t, req.MembershipType, res.MembershipType)
@@ -19,29 +22,34 @@ func TestCreateMembership(t *testing.T) {
 		app := NewApplication(*NewRepository(map[string]Membership{}))
 		_, _ = app.Create(CreateRequest{"jenny", "naver"})
 		_, err := app.Create(CreateRequest{"jenny", "payco"})
+
+		log.Println(err)
 		assert.NotNil(t, err)
 	})
 
 	t.Run("사용자 이름을 입력하지 않은 경우 실패한다.", func(t *testing.T) {
 		app := NewApplication(*NewRepository(map[string]Membership{}))
 		_, err := app.Create(CreateRequest{"", "payco"})
+		log.Println(err)
 		assert.NotNil(t, err)
 	})
 
 	t.Run("멤버십 타입을 입력하지 않은 경우 실패한다.", func(t *testing.T) {
 		app := NewApplication(*NewRepository(map[string]Membership{}))
 		_, err := app.Create(CreateRequest{"jenny", ""})
+		log.Println(err)
 		assert.NotNil(t, err)
 	})
 
 	t.Run("naver/toss/payco 이외의 타입을 입력한 경우 실패한다.", func(t *testing.T) {
 		app := NewApplication(*NewRepository(map[string]Membership{}))
 		_, err := app.Create(CreateRequest{"jenny", "paybook"})
+		log.Println(err)
 		assert.NotNil(t, err)
 	})
 }
 
-var testName, testType = " tester", "toss"
+var testName, testType = "tester", "toss"
 
 func TestUpdate(t *testing.T) {
 
@@ -51,6 +59,7 @@ func TestUpdate(t *testing.T) {
 
 		req := UpdateRequest{createResponse.ID, "ray", "payco"}
 		res, err := app.Update(req)
+		log.Println(err)
 
 		assert.Nil(t, err)
 		assert.Equal(t, req.MembershipType, res.MembershipType)
@@ -62,8 +71,9 @@ func TestUpdate(t *testing.T) {
 		app := NewApplication(*NewRepository(map[string]Membership{}))
 		createResponse, _ := app.Create(CreateRequest{testName, testType})
 
-		req := UpdateRequest{createResponse.ID, "ray", "payco"}
+		req := UpdateRequest{createResponse.ID, "tester", "payco"}
 		_, err := app.Update(req)
+		log.Println(err)
 		assert.NotNil(t, err)
 	})
 
@@ -73,6 +83,7 @@ func TestUpdate(t *testing.T) {
 
 		req := UpdateRequest{"", "ray", "payco"}
 		_, err := app.Update(req)
+		log.Println(err)
 		assert.NotNil(t, err)
 	})
 
@@ -82,6 +93,7 @@ func TestUpdate(t *testing.T) {
 
 		req := UpdateRequest{createResponse.ID, "", "payco"}
 		_, err := app.Update(req)
+		log.Println(err)
 		assert.NotNil(t, err)
 	})
 
@@ -91,6 +103,7 @@ func TestUpdate(t *testing.T) {
 
 		req := UpdateRequest{createResponse.ID, "ray", ""}
 		_, err := app.Update(req)
+		log.Println(err)
 		assert.NotNil(t, err)
 	})
 
@@ -100,6 +113,7 @@ func TestUpdate(t *testing.T) {
 
 		req := UpdateRequest{createResponse.ID, "ray", "paybook"}
 		_, err := app.Update(req)
+		log.Println(err)
 		assert.NotNil(t, err)
 	})
 }
@@ -111,6 +125,7 @@ func TestDelete(t *testing.T) {
 		createResponse, _ := app.Create(CreateRequest{testName, testType})
 
 		err := app.Delete(createResponse.ID)
+		log.Println(err)
 		assert.Nil(t, err)
 	})
 
@@ -119,6 +134,7 @@ func TestDelete(t *testing.T) {
 		_, _ = app.Create(CreateRequest{testName, testType})
 
 		err := app.Delete("")
+		log.Println(err)
 		assert.NotNil(t, err)
 	})
 
@@ -126,6 +142,7 @@ func TestDelete(t *testing.T) {
 		app := NewApplication(*NewRepository(map[string]Membership{}))
 		_, _ = app.Create(CreateRequest{testName, testType})
 		err := app.Delete("nonexists")
+		log.Println(err)
 
 		assert.NotNil(t, err)
 	})
@@ -137,6 +154,7 @@ func TestRead(t *testing.T) {
 		app := NewApplication(*NewRepository(map[string]Membership{}))
 		createResponse, _ := app.Create(CreateRequest{testName, testType})
 		res, err := app.Read(createResponse.ID)
+		log.Println(err)
 
 		assert.Nil(t, err)
 		assert.NotEmpty(t, res)
@@ -148,6 +166,7 @@ func TestRead(t *testing.T) {
 		_, _ = app.Create(CreateRequest{testName, testType})
 
 		_, err := app.Read("")
+		log.Println(err)
 		assert.NotNil(t, err)
 	})
 
@@ -156,6 +175,7 @@ func TestRead(t *testing.T) {
 		_, _ = app.Create(CreateRequest{testName, testType})
 
 		_, err := app.Read("nonexists")
+		log.Println(err)
 		assert.NotNil(t, err)
 	})
 
