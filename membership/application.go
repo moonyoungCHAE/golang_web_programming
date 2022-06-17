@@ -2,6 +2,7 @@ package membership
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gofrs/uuid"
 	"strings"
 )
@@ -27,17 +28,17 @@ func (app *Application) Create(request CreateRequest) (CreateResponse, error) {
 
 	// 파라미터 검증
 	if request.UserName == "" || request.MembershipType == "" {
-		return CreateResponse{}, errors.New("username or membership-type is not entered")
+		return CreateResponse{}, errors.New("[create] username or membership-type is not entered")
 	}
 
 	// 멤버십 타입 검증
 	if !strings.Contains(validTypes, request.MembershipType) {
-		return CreateResponse{}, errors.New("membership type is invalid")
+		return CreateResponse{}, errors.New("[create] membership type is invalid")
 	}
 
 	// 중복 확인
 	if isDuplicateName(app.repository.data, request.UserName) {
-		return CreateResponse{}, errors.New("username is duplicated")
+		return CreateResponse{}, errors.New("[create] username is duplicated")
 	}
 
 	// Memory DB에 추가
@@ -49,7 +50,29 @@ func (app *Application) Create(request CreateRequest) (CreateResponse, error) {
 }
 
 func (app *Application) Update(request UpdateRequest) (UpdateResponse, error) {
-	return UpdateResponse{}, nil
+
+	// 파라미터 검증
+	if request.ID == "" || request.UserName == "" || request.MembershipType == "" {
+		return UpdateResponse{}, errors.New("[update] ID or username, membership-type is not entered")
+	}
+
+	// 멤버십 타입 검증
+	if !strings.Contains(validTypes, request.MembershipType) {
+		return UpdateResponse{}, errors.New("[update] membership type is invalid")
+	}
+
+	// 중복 확인
+	if isDuplicateName(app.repository.data, request.UserName) {
+		return UpdateResponse{}, errors.New("[update] username is duplicated")
+	}
+
+	// Memory DB에 수정
+	app.repository.data[request.ID] = Membership{ID: request.ID, UserName: request.UserName, MembershipType: request.MembershipType}
+
+	res := app.repository.data[request.ID]
+	fmt.Println(res)
+
+	return UpdateResponse{res.ID, res.UserName, res.MembershipType}, nil
 }
 
 func (app *Application) Delete(id string) error {
