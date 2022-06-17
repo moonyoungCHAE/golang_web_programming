@@ -19,11 +19,11 @@ const validTypes string = "naver/toss/payco"
 func (app *Application) Create(request CreateRequest) (CreateResponse, error) {
 
 	// ID 생성
-	uuid, err := uuid.NewGen().NewV4()
+	randomId, err := uuid.NewGen().NewV4()
 	if err != nil {
 		panic(err)
 	}
-	userId := uuid.String()
+	userId := randomId.String()
 
 	// 파라미터 검증
 	if request.UserName == "" || request.MembershipType == "" {
