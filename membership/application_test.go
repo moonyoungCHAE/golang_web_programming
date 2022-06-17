@@ -75,15 +75,29 @@ func TestDelete(t *testing.T) {
 func TestRead(t *testing.T) {
 
 	t.Run("멤버십을 조회합니다.", func(t *testing.T) {
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+		createResponse, _ := app.Create(CreateRequest{testName, testType})
+		res, err := app.Read(createResponse.ID)
 
+		assert.Nil(t, err)
+		assert.NotEmpty(t, res)
+		assert.Equal(t, createResponse.ID, res.ID)
 	})
 
 	t.Run("id를 입력하지 않았을 때 예외 처리한다.", func(t *testing.T) {
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+		_, _ = app.Create(CreateRequest{testName, testType})
 
+		_, err := app.Read("")
+		assert.NotNil(t, err)
 	})
 
 	t.Run("입력한 id가 존재하지 않을 때 예외 처리한다.", func(t *testing.T) {
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+		_, _ = app.Create(CreateRequest{testName, testType})
 
+		_, err := app.Read("nonexists")
+		assert.NotNil(t, err)
 	})
 
 }
