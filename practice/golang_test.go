@@ -86,7 +86,6 @@ func TestGolang(t *testing.T) {
 		select {
 		case <-timeoutCtx.Done():
 			endTime = time.Now()
-			//fmt.Printf("startTime : %s || endTime : %s\n", startTime, endTime)
 			break
 		}
 
@@ -105,7 +104,6 @@ func TestGolang(t *testing.T) {
 		select {
 		case <-deadlineCtx.Done():
 			endTime = time.Now()
-			//fmt.Printf("startTime : %s || endTime : %s\n", startTime, endTime)
 			break
 		}
 
@@ -119,9 +117,11 @@ func TestGolang(t *testing.T) {
 		ctx := context.Background()
 		ctx = context.WithValue(ctx, 7, "Heung Min Son")
 		ctx = context.WithValue(ctx, 10, "Harry Kane")
+		ctx = context.WithValue(ctx, 11, "Eric Dier")
 
 		assert.Equal(t, "Heung Min Son", ctx.Value(7))
-		assert.Equal(t, nil, ctx.Value(11))
+		assert.Nil(t, ctx.Value(12))
+		assert.NotNil(t, ctx.Value(11))
 	})
 }
 
