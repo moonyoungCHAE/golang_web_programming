@@ -2,10 +2,10 @@ package membership
 
 import (
 	"errors"
-	"fmt"
 	"github.com/gofrs/uuid"
-	"strings"
 )
+
+var validMemberships = [3]string{"toss", "naver", "payco"}
 
 type Application struct {
 	repository Repository
@@ -15,110 +15,90 @@ func NewApplication(repository Repository) *Application {
 	return &Application{repository: repository}
 }
 
-const validTypes string = "naver/toss/payco"
-
 func (app *Application) Create(request CreateRequest) (CreateResponse, error) {
 
-	// ID 생성
 	randomId, err := uuid.NewGen().NewV4()
 	if err != nil {
-		panic(err)
+		return CreateResponse{}, errors.New("[create] uuid create failed")
 	}
 	userId := randomId.String()
 
-	// 파라미터 검증
 	if request.UserName == "" || request.MembershipType == "" {
 		return CreateResponse{}, errors.New("[create] username or membership-type is not entered")
 	}
 
-	// 멤버십 타입 검증
-	if !strings.Contains(validTypes, request.MembershipType) {
+	if isInvalidMembership(request.MembershipType) {
 		return CreateResponse{}, errors.New("[create] membership type is invalid")
 	}
 
-	// 중복 확인
-	if isDuplicateName(app.repository.data, request.UserName) {
+	if app.isDuplicateName(request.UserName) {
 		return CreateResponse{}, errors.New("[create] username is duplicated")
 	}
 
-	// Memory DB에 추가
-	app.repository.data[userId] = Membership{
+	app.repository.Create(Membership{
 		userId, request.UserName, request.MembershipType,
-	}
+	})
 
 	return CreateResponse{userId, request.MembershipType}, nil
 }
 
 func (app *Application) Update(request UpdateRequest) (UpdateResponse, error) {
 
-	// 파라미터 검증
 	if request.ID == "" || request.UserName == "" || request.MembershipType == "" {
 		return UpdateResponse{}, errors.New("[update] ID or username, membership-type is not entered")
 	}
 
-	// 멤버십 타입 검증
-	if !strings.Contains(validTypes, request.MembershipType) {
+	if isInvalidMembership(request.MembershipType) {
 		return UpdateResponse{}, errors.New("[update] membership type is invalid")
 	}
 
-	// 중복 확인
-	if isDuplicateName(app.repository.data, request.UserName) {
+	if app.isDuplicateName(request.UserName) {
 		return UpdateResponse{}, errors.New("[update] username is duplicated")
 	}
 
-	// Memory DB에 수정
-	app.repository.data[request.ID] = Membership{ID: request.ID, UserName: request.UserName, MembershipType: request.MembershipType}
+	res := app.repository.Update(Membership{ID: request.ID, UserName: request.UserName, MembershipType: request.MembershipType})
 
-	res, exists := app.repository.data[request.ID]
-	if !exists {
-		return UpdateResponse{}, errors.New("[update] after update, key is invalid")
+	if res.ID == "" {
+		return UpdateResponse{}, errors.New("[update] ID is not exists")
 	}
-	fmt.Println(res)
 
 	return UpdateResponse{res.ID, res.UserName, res.MembershipType}, nil
 }
 
 func (app *Application) Delete(id string) error {
 
-	// 파라미터 검증
 	if id == "" {
 		return errors.New("[delete] ID is not entered")
 	}
+	err := app.repository.Delete(id)
 
-	// id 존재 여부 확인
-	if _, exists := app.repository.data[id]; !exists {
-		return errors.New("[delete] ID is invalid (non-exists)")
-	}
-
-	// Memory DB에 삭제
-	delete(app.repository.data, id)
-
-	return nil
+	return err
 }
 
 func (app *Application) Read(id string) (ReadResponse, error) {
 
-	// 파라미터 검증
 	if id == "" {
 		return ReadResponse{}, errors.New("[read] ID is not entered")
 	}
+	res, err := app.repository.ReadById(id)
 
-	var membership, exists = app.repository.data[id]
-
-	// id 존재 여부 확인
-	if !exists {
-		return ReadResponse{}, errors.New("[read] ID is invalid (non-exists)")
-	}
-
-	return ReadResponse{membership.ID, membership.UserName, membership.MembershipType}, nil
+	return ReadResponse{res.ID, res.UserName, res.MembershipType}, err
 }
 
 // isDuplicateName returns a bool value whether if username is duplicated or not
-func isDuplicateName(data map[string]Membership, userName string) bool {
-	for _, membership := range data {
-		if membership.UserName == userName {
-			return true
-		}
+func (app *Application) isDuplicateName(userName string) bool {
+	if app.repository.ReadCountByName(userName) > 0 {
+		return true
 	}
 	return false
+}
+
+// isInvalidMembership returns a bool value whether if membershipType is valid or not
+func isInvalidMembership(membershipType string) bool {
+	for _, value := range validMemberships {
+		if value == membershipType {
+			return false
+		}
+	}
+	return true
 }
