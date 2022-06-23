@@ -7,15 +7,15 @@ import (
 
 var validMemberships = [3]string{"toss", "naver", "payco"}
 
-type Application struct {
+type Service struct {
 	repository Repository
 }
 
-func NewApplication(repository Repository) *Application {
-	return &Application{repository: repository}
+func NewService(repository Repository) *Service {
+	return &Service{repository: repository}
 }
 
-func (app *Application) Create(request CreateRequest) (CreateResponse, error) {
+func (app *Service) Create(request CreateRequest) (CreateResponse, error) {
 
 	randomId, err := uuid.NewGen().NewV4()
 	if err != nil {
@@ -42,7 +42,7 @@ func (app *Application) Create(request CreateRequest) (CreateResponse, error) {
 	return CreateResponse{userId, request.MembershipType}, nil
 }
 
-func (app *Application) Update(request UpdateRequest) (UpdateResponse, error) {
+func (app *Service) Update(request UpdateRequest) (UpdateResponse, error) {
 
 	if request.ID == "" || request.UserName == "" || request.MembershipType == "" {
 		return UpdateResponse{}, errors.New("[update] ID or username, membership-type is not entered")
@@ -65,7 +65,7 @@ func (app *Application) Update(request UpdateRequest) (UpdateResponse, error) {
 	return UpdateResponse{res.ID, res.UserName, res.MembershipType}, nil
 }
 
-func (app *Application) Delete(id string) error {
+func (app *Service) Delete(id string) error {
 
 	if id == "" {
 		return errors.New("[delete] ID is not entered")
@@ -75,7 +75,7 @@ func (app *Application) Delete(id string) error {
 	return err
 }
 
-func (app *Application) Read(id string) (ReadResponse, error) {
+func (app *Service) Read(id string) (ReadResponse, error) {
 
 	if id == "" {
 		return ReadResponse{}, errors.New("[read] ID is not entered")
@@ -86,7 +86,7 @@ func (app *Application) Read(id string) (ReadResponse, error) {
 }
 
 // isDuplicateName returns a bool value whether if username is duplicated or not
-func (app *Application) isDuplicateName(userName string) bool {
+func (app *Service) isDuplicateName(userName string) bool {
 	if app.repository.ReadCountByName(userName) > 0 {
 		return true
 	}
