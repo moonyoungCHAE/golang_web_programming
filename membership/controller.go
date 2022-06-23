@@ -20,6 +20,15 @@ func (c Controller) Read(ctx echo.Context) error {
 	return ctx.JSON(res.Code, res)
 }
 
+func (c Controller) ReadAll(ctx echo.Context) error {
+	offset := ctx.QueryParam("offset")
+	limit := ctx.QueryParam("limit")
+
+	res, _ := c.service.ReadAll(offset, limit)
+
+	return ctx.JSON(res.Code, res)
+}
+
 func (c Controller) Create(ctx echo.Context) error {
 	var req CreateRequest
 	err := ctx.Bind(&req)
