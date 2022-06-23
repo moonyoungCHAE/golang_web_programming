@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/gofrs/uuid"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -80,7 +81,7 @@ func (app *Service) Update(request UpdateRequest) (UpdateResponse, error) {
 
 	if res.ID == "" {
 		return UpdateResponse{
-			Code:    http.StatusNoContent,
+			Code:    http.StatusBadRequest,
 			Message: "[update] ID is not exists",
 		}, errors.New("[update] ID is not exists")
 	}
@@ -106,7 +107,7 @@ func (app *Service) Delete(id string) (DeleteResponse, error) {
 
 	if err != nil {
 		return DeleteResponse{
-			Code:    http.StatusNoContent,
+			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		}, err
 	}
@@ -129,9 +130,9 @@ func (app *Service) Read(id string) (ReadResponse, error) {
 
 	if err != nil {
 		return ReadResponse{
-			Code:    http.StatusNoContent,
+			Code:    http.StatusBadRequest,
 			Message: err.Error(),
-		}, nil
+		}, err
 	}
 
 	return ReadResponse{
@@ -141,6 +142,32 @@ func (app *Service) Read(id string) (ReadResponse, error) {
 		UserName:       res.UserName,
 		MembershipType: res.MembershipType,
 	}, nil
+}
+
+func (app *Service) ReadAll(offset string, limit string) (ReadAllResponse, error) {
+
+	var memberships []Membership
+	var err error
+
+	if offset != "" && limit != "" {
+		var startNum int
+		var amount int
+		if startNum, err = strconv.Atoi(offset); err != nil {
+			return ReadAllResponse{Code: http.StatusBadRequest, Message: "invalid offset data"}, errors.New("invalid offset data")
+		}
+
+		if amount, err = strconv.Atoi(limit); err != nil {
+			return ReadAllResponse{Code: http.StatusBadRequest, Message: "invalid limit data"}, errors.New("invalid limit data")
+		}
+
+		memberships, err = app.repository.ReadAll(startNum, amount)
+
+		return ReadAllResponse{Code: http.StatusOK, Message: "OK", Memberships: memberships}, nil
+	}
+
+	memberships, err = app.repository.ReadAll(0, 0)
+
+	return ReadAllResponse{Code: http.StatusOK, Message: "OK", Memberships: memberships}, nil
 }
 
 // isDuplicateName returns a bool value whether if username is duplicated or not

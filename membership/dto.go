@@ -34,10 +34,13 @@ type ReadResponse struct {
 	MembershipType string `json:"membership_type"`
 }
 
+type ReadAllResponse struct {
+	Code        int          `json:"-"`
+	Message     string       `json:"message"`
+	Memberships []Membership `json:"memberships"`
+}
+
 type DeleteResponse struct {
-	Code           int    `json:"-"`
-	Message        string `json:"message"`
-	ID             string `json:"id"`
-	UserName       string `json:"user_name"`
-	MembershipType string `json:"membership_type"`
+	Code    int    `json:"-"`
+	Message string `json:"message"`
 }
