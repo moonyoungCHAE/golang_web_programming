@@ -9,9 +9,10 @@ func InitializeRoutes(cfg *config.AppConfig) *echo.Echo {
 
 	controller := cfg.GetController()
 	memberships := cfg.GetGroup().Group("/memberships")
-	memberships.POST("/", controller.Create)
+	memberships.POST("", controller.Create)
+	memberships.GET("", controller.ReadAll)
 	memberships.GET("/:id", controller.Read)
-	memberships.PUT("/:id", controller.Update)
+	memberships.PUT("", controller.Update)
 	memberships.DELETE("/:id", controller.Delete)
 
 	return cfg.GetEcho()
