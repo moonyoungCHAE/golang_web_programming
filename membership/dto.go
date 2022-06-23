@@ -37,7 +37,7 @@ type ReadResponse struct {
 type ReadAllResponse struct {
 	Code        int          `json:"-"`
 	Message     string       `json:"message"`
-	Memberships []Membership `json:"memberships"`
+	Memberships []Membership `json:"memberships,omitempty"`
 }
 
 type DeleteResponse struct {
