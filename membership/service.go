@@ -148,10 +148,10 @@ func (app *Service) ReadAll(offset string, limit string) (ReadAllResponse, error
 
 	var memberships []Membership
 	var err error
+	var startNum int
+	var amount int
 
 	if offset != "" && limit != "" {
-		var startNum int
-		var amount int
 		if startNum, err = strconv.Atoi(offset); err != nil {
 			return ReadAllResponse{Code: http.StatusBadRequest, Message: "invalid offset data"}, errors.New("invalid offset data")
 		}
@@ -159,13 +159,13 @@ func (app *Service) ReadAll(offset string, limit string) (ReadAllResponse, error
 		if amount, err = strconv.Atoi(limit); err != nil {
 			return ReadAllResponse{Code: http.StatusBadRequest, Message: "invalid limit data"}, errors.New("invalid limit data")
 		}
-
-		memberships, err = app.repository.ReadAll(startNum, amount)
-
-		return ReadAllResponse{Code: http.StatusOK, Message: "OK", Memberships: memberships}, nil
 	}
 
-	memberships, err = app.repository.ReadAll(0, 0)
+	memberships, err = app.repository.ReadAll(startNum, amount)
+
+	if err != nil {
+		return ReadAllResponse{Code: http.StatusBadRequest, Message: err.Error()}, err
+	}
 
 	return ReadAllResponse{Code: http.StatusOK, Message: "OK", Memberships: memberships}, nil
 }
