@@ -192,3 +192,61 @@ func TestRead(t *testing.T) {
 	})
 
 }
+
+func TestReadAll(t *testing.T) {
+
+	t.Run("멤버십 전체를 조회합니다.", func(t *testing.T) {
+		app := NewService(*NewRepository(map[string]Membership{}))
+		createTestMembership(app)
+		res, err := app.ReadAll("", "")
+
+		t.Log(res)
+		assert.Nil(t, err)
+		assert.NotEmpty(t, res)
+	})
+
+	t.Run("offset이 존재하지 않을 때 전체 조회됩니다.", func(t *testing.T) {
+		app := NewService(*NewRepository(map[string]Membership{}))
+		createTestMembership(app)
+
+		res, err := app.ReadAll("", "10")
+
+		t.Log(res)
+		assert.Nil(t, err)
+		assert.NotEmpty(t, res)
+	})
+
+	t.Run("limit이 존재하지 않을 때 전체 조회됩니다.", func(t *testing.T) {
+		app := NewService(*NewRepository(map[string]Membership{}))
+		createTestMembership(app)
+
+		res, err := app.ReadAll("1", "")
+
+		t.Log(res)
+		assert.Nil(t, err)
+		assert.NotEmpty(t, res)
+	})
+
+	t.Run("offset 타입변환 오류 발생시 예외 처리", func(t *testing.T) {
+		app := NewService(*NewRepository(map[string]Membership{}))
+		createTestMembership(app)
+
+		res, err := app.ReadAll("test", "10")
+
+		t.Log(res)
+		assert.Error(t, err)
+		assert.Equal(t, fmt.Errorf("invalid offset data"), err)
+
+	})
+
+	t.Run("limit 타입변환 오류 발생시 예외 처리", func(t *testing.T) {
+		app := NewService(*NewRepository(map[string]Membership{}))
+		createTestMembership(app)
+
+		res, err := app.ReadAll("0", "test")
+
+		t.Log(res)
+		assert.Error(t, err)
+		assert.Equal(t, fmt.Errorf("invalid limit data"), err)
+	})
+}
