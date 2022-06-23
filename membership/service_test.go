@@ -141,14 +141,14 @@ func TestDelete(t *testing.T) {
 		app := NewService(*NewRepository(map[string]Membership{}))
 		createResponse := createTestMembership(app)
 
-		err := app.Delete(createResponse.ID)
+		_, err := app.Delete(createResponse.ID)
 
 		assert.Nil(t, err)
 	})
 
 	t.Run("id를 입력하지 않았을 때 예외 처리한다.", func(t *testing.T) {
 		app := NewService(*NewRepository(map[string]Membership{}))
-		err := app.Delete("")
+		_, err := app.Delete("")
 
 		assert.NotNil(t, err)
 		assert.Equal(t, fmt.Errorf("[delete] ID is not entered"), err)
@@ -156,7 +156,7 @@ func TestDelete(t *testing.T) {
 
 	t.Run("입력한 id가 존재하지 않을 때 예외 처리한다.", func(t *testing.T) {
 		app := NewService(*NewRepository(map[string]Membership{}))
-		err := app.Delete("nonexists")
+		_, err := app.Delete("nonexists")
 
 		assert.NotNil(t, err)
 		assert.Equal(t, fmt.Errorf("[delete] ID is invalid (non-exists)"), err)
