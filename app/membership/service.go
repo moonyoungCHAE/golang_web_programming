@@ -13,14 +13,20 @@ func NewService(repository Repository) *Service {
 	return &Service{repository: repository}
 }
 
-func (service *Service) Create(request CreateRequest) CreateResponse {
-	membership := Membership{uuid.New().String(), request.UserName, request.MembershipType}
-	service.repository.Create(membership)
-	return CreateResponse{
-		Code:           http.StatusCreated,
-		Message:        http.StatusText(http.StatusCreated),
-		ID:             membership.ID,
-		MembershipType: membership.MembershipType,
+func (service *Service) Create(request CreateRequest) GetResponse {
+	membership := Membership{uuid.New().String(), request.UserName, request.MembershipType, request.Status}
+	member, err := service.repository.Create(membership)
+	if err != nil {
+		return GetResponse{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		}
+	}
+
+	return GetResponse{
+		Code:    http.StatusCreated,
+		Message: http.StatusText(http.StatusCreated),
+		Member:  member,
 	}
 }
 
@@ -29,14 +35,56 @@ func (service *Service) GetByID(id string) GetResponse {
 	if err != nil {
 		return GetResponse{
 			Code:    http.StatusBadRequest,
-			Message: "not found id",
+			Message: err.Error(),
 		}
 	}
 	return GetResponse{
-		Code:           http.StatusOK,
-		Message:        http.StatusText(http.StatusOK),
-		ID:             membership.ID,
-		UserNames:      membership.UserName,
-		MembershipType: membership.MembershipType,
+		Code:    http.StatusOK,
+		Message: http.StatusText(http.StatusOK),
+		Member:  membership,
+	}
+}
+func (service *Service) RemoveByID(id string) GetResponse {
+	member, err := service.repository.RemoveByID(id)
+	if err != nil {
+		return GetResponse{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		}
+	}
+	return GetResponse{
+		Code:    http.StatusOK,
+		Message: http.StatusText(http.StatusOK),
+		Member:  member,
+	}
+}
+func (service *Service) ModifyMember(request UpdateRequest) GetResponse {
+	membership := Membership{uuid.New().String(), request.UserName, request.MembershipType, request.Status}
+	member, err := service.repository.ModifyMember(membership)
+	if err != nil {
+		return GetResponse{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		}
+	}
+	return GetResponse{
+		Code:    http.StatusOK,
+		Message: http.StatusText(http.StatusOK),
+		Member:  member,
+	}
+}
+
+func (service *Service) GetMembers(offset string, limit string) GetResponse {
+	memberList, err := service.repository.GetMembers(offset, limit)
+	if err != nil {
+		return GetResponse{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		}
+	}
+	return GetResponse{
+		Code:    http.StatusOK,
+		Message: http.StatusText(http.StatusOK),
+		Member:  memberList,
 	}
 }

@@ -38,7 +38,7 @@ func TestTossRecreate(t *testing.T) {
 			JSON().Object()
 
 		// when: 토스 멤버십을 삭제한다.
-		e.DELETE(fmt.Sprintf("/memberships/%s", membershipCreateRequest.Value("ID").Raw())).
+		e.DELETE(fmt.Sprintf("/memberships/%s", membershipCreateRequest.Value("id").Raw())).
 			Expect().
 			Status(http.StatusOK)
 
@@ -47,6 +47,7 @@ func TestTossRecreate(t *testing.T) {
 			WithJSON(membership.CreateRequest{
 				UserName:       "andy",
 				MembershipType: "toss",
+				Status:         "delete",
 			}).
 			Expect().
 			Status(http.StatusBadRequest).
