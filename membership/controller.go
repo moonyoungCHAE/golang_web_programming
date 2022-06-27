@@ -31,8 +31,7 @@ func (c Controller) ReadAll(ctx echo.Context) error {
 
 func (c Controller) Create(ctx echo.Context) error {
 	var req CreateRequest
-	err := ctx.Bind(&req)
-	if err != nil {
+	if err := ctx.Bind(&req); err != nil {
 		return ctx.JSON(http.StatusBadRequest, CreateResponse{Message: "invalid_request_format"})
 	}
 	res, _ := c.service.Create(req)
@@ -42,10 +41,11 @@ func (c Controller) Create(ctx echo.Context) error {
 
 func (c Controller) Update(ctx echo.Context) error {
 	var req UpdateRequest
-	err := ctx.Bind(&req)
-	if err != nil {
+	if err := ctx.Bind(&req); err != nil {
 		return ctx.JSON(http.StatusBadRequest, UpdateResponse{Message: "invalid_request_format"})
 	}
+	req.ID = ctx.Param("id")
+
 	res, _ := c.service.Update(req)
 	return ctx.JSON(res.Code, res)
 }

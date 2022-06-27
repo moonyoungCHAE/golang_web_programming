@@ -37,9 +37,9 @@ func (r *Repository) Delete(id string) error {
 
 func (r *Repository) ReadAll(offset int, limit int) ([]Membership, error) {
 
-	var maxCnt = len(r.data)
-	var end = offset + limit
-	var memberships = make([]Membership, 0, maxCnt)
+	maxCnt := len(r.data)
+	end := offset + limit
+	memberships := make([]Membership, 0, maxCnt)
 
 	if offset > maxCnt {
 		return []Membership{}, errors.New("offset is over the total count")
@@ -54,7 +54,6 @@ func (r *Repository) ReadAll(offset int, limit int) ([]Membership, error) {
 	}
 
 	return memberships[offset:end], nil
-
 }
 
 func (r *Repository) ReadById(id string) (Membership, error) {

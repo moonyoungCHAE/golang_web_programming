@@ -13,25 +13,21 @@ type CreateResponse struct {
 }
 
 type UpdateRequest struct {
-	ID             string `json:"id"`
+	ID             string `json:"-`
 	UserName       string `json:"user_name"`
 	MembershipType string `json:"membership_type"`
 }
 
 type UpdateResponse struct {
-	Code           int    `json:"-"`
-	Message        string `json:"message"`
-	ID             string `json:"id"`
-	UserName       string `json:"user_name"`
-	MembershipType string `json:"membership_type"`
+	Code       int        `json:"-"`
+	Message    string     `json:"message"`
+	Membership Membership `json:membership,omitempty`
 }
 
 type ReadResponse struct {
-	Code           int    `json:"-"`
-	Message        string `json:"message"`
-	ID             string `json:"id"`
-	UserName       string `json:"user_name"`
-	MembershipType string `json:"membership_type"`
+	Code       int        `json:"-"`
+	Message    string     `json:"message"`
+	Membership Membership `json:membership,omitempty`
 }
 
 type ReadAllResponse struct {
