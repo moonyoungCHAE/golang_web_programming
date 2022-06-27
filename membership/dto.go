@@ -1,29 +1,42 @@
 package membership
 
 type CreateRequest struct {
-	UserName       string
-	MembershipType string
+	UserName       string `json:"user_name"`
+	MembershipType string `json:"membership_type"`
 }
 
 type CreateResponse struct {
-	ID             string
-	MembershipType string
+	Code           int    `json:"-"`
+	Message        string `json:"message"`
+	ID             string `json:"id"`
+	MembershipType string `json:"membership_type"`
 }
 
 type UpdateRequest struct {
-	ID             string
-	UserName       string
-	MembershipType string
+	ID             string `json:"-`
+	UserName       string `json:"user_name"`
+	MembershipType string `json:"membership_type"`
 }
 
 type UpdateResponse struct {
-	ID             string
-	UserName       string
-	MembershipType string
+	Code       int        `json:"-"`
+	Message    string     `json:"message"`
+	Membership Membership `json:membership,omitempty`
 }
 
 type ReadResponse struct {
-	ID             string
-	UserName       string
-	MembershipType string
+	Code       int        `json:"-"`
+	Message    string     `json:"message"`
+	Membership Membership `json:membership,omitempty`
+}
+
+type ReadAllResponse struct {
+	Code        int          `json:"-"`
+	Message     string       `json:"message"`
+	Memberships []Membership `json:"memberships,omitempty"`
+}
+
+type DeleteResponse struct {
+	Code    int    `json:"-"`
+	Message string `json:"message"`
 }

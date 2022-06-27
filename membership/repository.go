@@ -1,6 +1,8 @@
 package membership
 
-import "errors"
+import (
+	"errors"
+)
 
 type Repository struct {
 	data map[string]Membership
@@ -31,6 +33,27 @@ func (r *Repository) Delete(id string) error {
 	}
 	delete(r.data, id)
 	return nil
+}
+
+func (r *Repository) ReadAll(offset int, limit int) ([]Membership, error) {
+
+	maxCnt := len(r.data)
+	end := offset + limit
+	memberships := make([]Membership, 0, maxCnt)
+
+	if offset > maxCnt {
+		return []Membership{}, errors.New("offset is over the total count")
+	}
+
+	if limit == 0 || end > maxCnt {
+		end = maxCnt
+	}
+
+	for _, m := range r.data {
+		memberships = append(memberships, m)
+	}
+
+	return memberships[offset:end], nil
 }
 
 func (r *Repository) ReadById(id string) (Membership, error) {
