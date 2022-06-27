@@ -50,7 +50,7 @@ func (app *Service) Create(request CreateRequest) (CreateResponse, error) {
 
 	return CreateResponse{
 		Code:           http.StatusCreated,
-		Message:        "Created",
+		Message:        http.StatusText(http.StatusCreated),
 		ID:             userId,
 		MembershipType: request.MembershipType,
 	}, nil
@@ -87,11 +87,9 @@ func (app *Service) Update(request UpdateRequest) (UpdateResponse, error) {
 	}
 
 	return UpdateResponse{
-		Code:           http.StatusCreated,
-		Message:        "Created",
-		ID:             res.ID,
-		UserName:       res.UserName,
-		MembershipType: res.MembershipType,
+		Code:       http.StatusCreated,
+		Message:    http.StatusText(http.StatusCreated),
+		Membership: Membership{res.ID, res.UserName, res.MembershipType},
 	}, nil
 }
 
@@ -114,7 +112,7 @@ func (app *Service) Delete(id string) (DeleteResponse, error) {
 
 	return DeleteResponse{
 		Code:    http.StatusOK,
-		Message: "OK",
+		Message: http.StatusText(http.StatusOK),
 	}, nil
 }
 
@@ -136,11 +134,9 @@ func (app *Service) Read(id string) (ReadResponse, error) {
 	}
 
 	return ReadResponse{
-		Code:           http.StatusOK,
-		Message:        "OK",
-		ID:             res.ID,
-		UserName:       res.UserName,
-		MembershipType: res.MembershipType,
+		Code:       http.StatusOK,
+		Message:    http.StatusText(http.StatusOK),
+		Membership: Membership{res.ID, res.UserName, res.MembershipType},
 	}, nil
 }
 
@@ -172,10 +168,7 @@ func (app *Service) ReadAll(offset string, limit string) (ReadAllResponse, error
 
 // isDuplicateName returns a bool value whether if username is duplicated or not
 func (app *Service) isDuplicateName(userName string) bool {
-	if app.repository.ReadCountByName(userName) > 0 {
-		return true
-	}
-	return false
+	return app.repository.ReadCountByName(userName) > 0
 }
 
 // isInvalidMembership returns a bool value whether if membershipType is valid or not

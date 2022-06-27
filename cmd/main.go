@@ -7,6 +7,6 @@ import (
 
 func main() {
 	cfg := config.GetInstance()
-	e := routes.InitializeRoutes(cfg)
-	e.Logger.Fatal(e.Start(":" + cfg.GetServicePort()))
+	routes.InitializeRoutes(cfg.GetGroup())
+	cfg.GetEcho().Logger.Fatal(cfg.GetEcho().Start(":" + cfg.GetServicePort()))
 }
