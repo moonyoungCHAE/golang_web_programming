@@ -74,3 +74,12 @@ func (r *Repository) ReadCountByName(name string) int {
 	}
 	return readCount
 }
+
+func (r *Repository) ReadIdByName(name string) string {
+	for _, m := range r.data {
+		if m.UserName == name {
+			return m.ID
+		}
+	}
+	return ""
+}
