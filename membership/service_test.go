@@ -66,9 +66,9 @@ func TestUpdate(t *testing.T) {
 
 		t.Log(err)
 		assert.Nil(t, err)
-		assert.Equal(t, req.MembershipType, res.MembershipType)
-		assert.Equal(t, req.UserName, res.UserName)
-		assert.Equal(t, req.ID, res.ID)
+		assert.Equal(t, req.MembershipType, res.Membership.MembershipType)
+		assert.Equal(t, req.UserName, res.Membership.UserName)
+		assert.Equal(t, req.ID, res.Membership.ID)
 	})
 
 	t.Run("수정하려는 사용자의 이름이 이미 존재하는 사용자 이름이라면 예외 처리한다.", func(t *testing.T) {
@@ -172,7 +172,7 @@ func TestRead(t *testing.T) {
 
 		assert.Nil(t, err)
 		assert.NotEmpty(t, res)
-		assert.Equal(t, createResponse.ID, res.ID)
+		assert.Equal(t, createResponse.ID, res.Membership.ID)
 	})
 
 	t.Run("id를 입력하지 않았을 때 예외 처리한다.", func(t *testing.T) {
