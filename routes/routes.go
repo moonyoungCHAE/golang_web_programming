@@ -29,14 +29,17 @@ func InitializeRoutes(e *echo.Group) {
 	memberships := e.Group("/memberships")
 	logo := e.Group("/logo")
 
-	e.Use(middleware.BodyDump(func(c echo.Context, reqBody []byte, resBody []byte) {
+	memberships.Use(middleware.BodyDump(func(c echo.Context, reqBody []byte, resBody []byte) {
 		uri := c.Request().RequestURI
 		method := c.Request().Method
 		status := http.StatusText(c.Response().Status)
 		reqStr := strings.Trim(string(reqBody), "\n")
 		resStr := strings.Trim(string(resBody), "\n")
-		c.Logger().Output().Write([]byte(fmt.Sprintf("URI:[%s], Method:[%s], StatusCode:[%s]\n"+
+		c.Logger().Output().Write([]byte(fmt.Sprintf("URI:[%s], Method:[%s], Status:[%s]\n"+
 			"RequestBody:[%s]\nResponseBody:[%s]\n\n", uri, method, status, reqStr, resStr)))
+	}))
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: "URI:[${uri}], Method:[${method}], StatusCode:[${status}]\n",
 	}))
 
 	jwtMiddleware := middleware.JWTWithConfig(middleware.JWTConfig{Claims: &user.Claims{}, SigningKey: user.DefaultSecret})
@@ -47,10 +50,12 @@ func InitializeRoutes(e *echo.Group) {
 
 	memberships.POST("", membershipCtl.Create)
 	memberships.GET("", membershipCtl.ReadAll, jwtMiddleware, userMiddleware.ValidateAdmin)
-	memberships.GET("/:id", membershipCtl.Read, jwtMiddleware, userMiddleware.ValidateAdmin)
+	memberships.GET("/:id", membershipCtl.Read, jwtMiddleware, userMiddleware.ValidateMemberOrAdmin)
 	memberships.PUT("/:id", membershipCtl.Update, jwtMiddleware, userMiddleware.ValidateMember)
 	memberships.DELETE("/:id", membershipCtl.Delete, jwtMiddleware, userMiddleware.ValidateMember)
+
 	logo.GET("", logoCtl.Get)
+
 	e.POST("/login", userCtl.Login)
 }
 
