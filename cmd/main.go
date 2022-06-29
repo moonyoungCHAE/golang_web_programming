@@ -1,8 +1,8 @@
 package main
 
 import (
-	"GolangLivePT01/golang_web_programming/config"
-	"GolangLivePT01/golang_web_programming/routes"
+	"GolangLivePT01/golang_web_programming/app/config"
+	"GolangLivePT01/golang_web_programming/app/routes"
 )
 
 func main() {

@@ -1,7 +1,7 @@
 package user
 
 import (
-	"GolangLivePT01/golang_web_programming/membership"
+	"GolangLivePT01/golang_web_programming/app/membership"
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 )
