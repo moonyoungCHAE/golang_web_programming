@@ -40,10 +40,7 @@ func (m Middleware) ValidateMemberOrAdmin(next echo.HandlerFunc) echo.HandlerFun
 	return func(c echo.Context) error {
 		user := c.Get("user").(*jwt.Token)
 		claims := user.Claims.(*Claims)
-		if claims.IsAdmin {
-			return next(c)
-		}
-		if claims.ID == c.Param("id") {
+		if claims.IsAdmin || claims.ID == c.Param("id") {
 			return next(c)
 		}
 		return echo.ErrUnauthorized
