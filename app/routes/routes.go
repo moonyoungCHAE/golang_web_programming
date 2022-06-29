@@ -2,8 +2,8 @@ package routes
 
 import (
 	"GolangLivePT01/golang_web_programming/app/logo"
-	membership2 "GolangLivePT01/golang_web_programming/app/membership"
-	user2 "GolangLivePT01/golang_web_programming/app/user"
+	membership "GolangLivePT01/golang_web_programming/app/membership"
+	user "GolangLivePT01/golang_web_programming/app/user"
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -12,13 +12,13 @@ import (
 )
 
 type Controllers struct {
-	MembershipController membership2.Controller
+	MembershipController membership.Controller
 	LogoController       logo.Controller
-	UserController       user2.Controller
+	UserController       user.Controller
 }
 
 type Middlewares struct {
-	Middleware user2.Middleware
+	Middleware user.Middleware
 }
 
 func InitializeRoutes(e *echo.Group) {
@@ -42,7 +42,7 @@ func InitializeRoutes(e *echo.Group) {
 		Format: "URI:[${uri}], Method:[${method}], StatusCode:[${status}]\n",
 	}))
 
-	jwtMiddleware := middleware.JWTWithConfig(middleware.JWTConfig{Claims: &user2.Claims{}, SigningKey: user2.DefaultSecret})
+	jwtMiddleware := middleware.JWTWithConfig(middleware.JWTConfig{Claims: &user.Claims{}, SigningKey: user.DefaultSecret})
 
 	membershipCtl := c.MembershipController
 	logoCtl := c.LogoController
@@ -60,20 +60,20 @@ func InitializeRoutes(e *echo.Group) {
 }
 
 func initController() *Controllers {
-	data := map[string]membership2.Membership{}
-	service := membership2.NewService(*membership2.NewRepository(data))
-	controller := membership2.NewController(*service)
+	data := map[string]membership.Membership{}
+	service := membership.NewService(*membership.NewRepository(data))
+	controller := membership.NewController(*service)
 
 	return &Controllers{
 		MembershipController: *controller,
 		LogoController:       *logo.NewController(),
-		UserController:       *user2.NewController(*user2.NewService(user2.DefaultSecret, *membership2.NewRepository(data))),
+		UserController:       *user.NewController(*user.NewService(user.DefaultSecret, *membership.NewRepository(data))),
 	}
 }
 
 func initUserMiddleware() *Middlewares {
-	data := map[string]membership2.Membership{}
+	data := map[string]membership.Membership{}
 	return &Middlewares{
-		Middleware: *user2.NewMiddleware(*membership2.NewRepository(data)),
+		Middleware: *user.NewMiddleware(*membership.NewRepository(data)),
 	}
 }
