@@ -1,8 +1,8 @@
 package app
 
 import (
-	"./membership"
-	"github.com/labstack/echo"
+	"github.com/boldfaced7/golang_web_programming/app/membership"
+	"github.com/labstack/echo/v4"
 )
 
 type Config struct {
