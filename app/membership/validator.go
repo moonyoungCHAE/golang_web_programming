@@ -15,8 +15,8 @@ var (
 	NoMembershipErr = errors.New("no_membership")
 )
 
-func (app *Application) ValidateCreate(request CreateRequest) error {
-	if _, exist := app.repository.data[request.UserName]; exist {
+func (service *Service) ValidateCreate(request CreateRequest) error {
+	if _, exist := service.repository.data[request.UserName]; exist {
 		return SameNameErr
 	}
 
@@ -34,7 +34,7 @@ func (app *Application) ValidateCreate(request CreateRequest) error {
 	return nil
 }
 
-func (app *Application) ValidateUpdate(request UpdateRequest) error {
+func (service *Service) ValidateUpdate(request UpdateRequest) error {
 	if request.ID == "" {
 		return NoIdErr
 	}
@@ -51,17 +51,17 @@ func (app *Application) ValidateUpdate(request UpdateRequest) error {
 		return WrongMembershipErr
 	}
 
-	if val, exist := app.repository.data[request.UserName]; exist && val.ID != request.ID {
+	if val, exist := service.repository.data[request.UserName]; exist && val.ID != request.ID {
 		return SameNameErr
 	}
 	return nil
 }
 
-func (app *Application) ValidateDelete(id string) error {
+func (service *Service) ValidateDelete(id string) error {
 	if id == "" {
 		return NoIdErr
 	}
-	if _, exist := app.repository.data[id]; !exist {
+	if _, exist := service.repository.data[id]; !exist {
 		return WrongIdErr
 	}
 	return nil
