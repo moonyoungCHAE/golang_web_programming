@@ -14,3 +14,7 @@ func (r *Repository) Create(membership Membership) {
 func (r *Repository) Update(membership Membership) {
 	r.data[membership.UserName] = membership
 }
+
+func (r *Repository) Delete(id string) {
+	delete(r.data, id)
+}

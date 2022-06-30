@@ -25,3 +25,8 @@ type UpdateResponse struct {
 	UserName       string
 	MembershipType string
 }
+
+type DeleteResponse struct {
+	Code    int    `json:"-"` // 코드는 사용자에게 안 보여줄 거니까
+	Message string `json:"message"`
+}

@@ -49,3 +49,14 @@ func (service *Service) Update(request UpdateRequest) (UpdateResponse, error) {
 		MembershipType: membership.MembershipType,
 	}, nil
 }
+
+func (service *Service) Delete(id string) (DeleteResponse, error) {
+	if err := service.ValidateDelete(id); err != nil {
+		return DeleteResponse{}, err
+	}
+	service.Delete(id)
+	return DeleteResponse{
+		Code:    http.StatusOK,
+		Message: http.StatusText(http.StatusOK),
+	}, nil
+}
