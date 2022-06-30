@@ -38,3 +38,16 @@ func (controller Controller) Update(c echo.Context) error {
 	}
 	return c.JSON(res.Code, res)
 }
+
+func (controller Controller) Delete(c echo.Context) error {
+	var req string
+	err := c.Bind(&req)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "invalid_request_format")
+	}
+	res, err := controller.service.Delete(req)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+	return c.JSON(res.Code, res)
+}
