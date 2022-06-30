@@ -54,9 +54,23 @@ func (service *Service) Delete(id string) (DeleteResponse, error) {
 	if err := service.ValidateDelete(id); err != nil {
 		return DeleteResponse{}, err
 	}
-	service.Delete(id)
+	service.repository.Delete(id)
 	return DeleteResponse{
 		Code:    http.StatusOK,
 		Message: http.StatusText(http.StatusOK),
+	}, nil
+}
+
+func (service *Service) GetByID(id string) (GetResponse, error) {
+	if err := service.ValidateGetByID(id); err != nil {
+		return GetResponse{}, err
+	}
+	membership := service.repository.GetByID(id)
+	return GetResponse{
+		Code:           http.StatusOK,
+		Message:        http.StatusText(http.StatusOK),
+		ID:             membership.ID,
+		UserName:       membership.UserName,
+		MembershipType: membership.MembershipType,
 	}, nil
 }

@@ -18,3 +18,11 @@ func (r *Repository) Update(membership Membership) {
 func (r *Repository) Delete(id string) {
 	delete(r.data, id)
 }
+
+func (r *Repository) GetByID(id string) Membership {
+	return Membership{
+		ID:             r.data[id].ID,
+		UserName:       r.data[id].UserName,
+		MembershipType: r.data[id].MembershipType,
+	}
+}

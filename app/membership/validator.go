@@ -66,3 +66,13 @@ func (service *Service) ValidateDelete(id string) error {
 	}
 	return nil
 }
+
+func (service *Service) ValidateGetByID(id string) error {
+	if id == "" {
+		return NoIdErr
+	}
+	if _, exist := service.repository.data[id]; !exist {
+		return WrongIdErr
+	}
+	return nil
+}
