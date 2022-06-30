@@ -1,5 +1,7 @@
 package membership
 
+import "strconv"
+
 type Repository struct {
 	data map[string]Membership
 }
@@ -25,4 +27,14 @@ func (r *Repository) GetByID(id string) Membership {
 		UserName:       r.data[id].UserName,
 		MembershipType: r.data[id].MembershipType,
 	}
+}
+
+func (r *Repository) GetSome(offset string, limit string) []Membership {
+	var res []Membership
+	o, _ := strconv.Atoi(offset)
+	l, _ := strconv.Atoi(limit)
+	for _, val := range r.data {
+		res = append(res, val)
+	}
+	return res[o : o+l]
 }

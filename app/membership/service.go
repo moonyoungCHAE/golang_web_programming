@@ -18,8 +18,8 @@ func (service *Service) Create(request CreateRequest) (CreateResponse, error) {
 		return CreateResponse{}, err
 	}
 	membership := Membership{
-		ID:             request.UserName,
-		UserName:       uuid.NewString(),
+		ID:             uuid.NewString(),
+		UserName:       request.UserName,
 		MembershipType: request.MembershipType,
 	}
 	service.repository.Create(membership)
@@ -72,5 +72,18 @@ func (service *Service) GetByID(id string) (GetResponse, error) {
 		ID:             membership.ID,
 		UserName:       membership.UserName,
 		MembershipType: membership.MembershipType,
+	}, nil
+}
+
+func (service *Service) GetSome(offset string, limit string) (GetSomeResponse, error) {
+	if err := service.ValidateGetSome(offset, limit); err != nil {
+		return GetSomeResponse{}, err
+	}
+	var res []Membership
+	res = service.repository.GetSome(offset, limit)
+	return GetSomeResponse{
+		Code:       http.StatusOK,
+		Message:    http.StatusText(http.StatusOK),
+		Membership: res,
 	}, nil
 }

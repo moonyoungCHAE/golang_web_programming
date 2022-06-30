@@ -25,6 +25,10 @@ func NewEcho(config Config) *echo.Echo {
 
 	e.POST("/memberships", controller.Create)
 	e.PUT("/memberships", controller.Update)
+	e.GET("/memberships", controller.GetByID)
+	e.DELETE("/memberships", controller.Delete)
+	// GET /memberships?offset=1,limit=3
+	e.GET("/memberships", controller.GetSome)
 
 	return e
 }

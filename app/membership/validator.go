@@ -2,16 +2,22 @@ package membership
 
 import (
 	"errors"
+	"strconv"
 )
 
 var (
-	SameNameErr = errors.New("same_name")
+	SameNameErr   = errors.New("same_name")
+	OutOfBoundErr = errors.New("out_of_bound")
 
-	WrongIdErr         = errors.New("wrong_id")
+	WrongIdErr = errors.New("wrong_id")
+	// rongLimitErr      = errors.New("wrong_limit")
+	WrongOffsetErr     = errors.New("wrong_offset")
 	WrongMembershipErr = errors.New("wrong_membership")
 
 	NoIdErr         = errors.New("no_ID")
 	NoNameErr       = errors.New("no_name")
+	NoLimitErr      = errors.New("no_limit")
+	NoOffsetErr     = errors.New("no_offset")
 	NoMembershipErr = errors.New("no_membership")
 )
 
@@ -73,6 +79,24 @@ func (service *Service) ValidateGetByID(id string) error {
 	}
 	if _, exist := service.repository.data[id]; !exist {
 		return WrongIdErr
+	}
+	return nil
+}
+
+func (service *Service) ValidateGetSome(offset string, limit string) error {
+	if offset == "" {
+		return NoOffsetErr
+	}
+	if limit == "" {
+		return NoLimitErr
+	}
+	o, _ := strconv.Atoi(offset)
+	if o < len(service.repository.data) {
+		return WrongOffsetErr
+	}
+	l, _ := strconv.Atoi(limit)
+	if o+l < len(service.repository.data) {
+		return OutOfBoundErr
 	}
 	return nil
 }

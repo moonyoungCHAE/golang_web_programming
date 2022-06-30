@@ -64,3 +64,13 @@ func (controller Controller) GetByID(c echo.Context) error {
 	}
 	return c.JSON(res.Code, res)
 }
+
+func (controller Controller) GetSome(c echo.Context) error {
+	offset := c.QueryParam("offset")
+	limit := c.QueryParam("limit")
+	res, err := controller.service.GetSome(offset, limit)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+	return c.JSON(res.Code, res)
+}
