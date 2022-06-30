@@ -19,10 +19,7 @@ func (controller Controller) Create(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "invalid_request_format")
 	}
-	res, err := controller.service.Create(req)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, err)
-	}
+	res, _ := controller.service.Create(req)
 	return c.JSON(res.Code, res)
 }
 
@@ -32,10 +29,7 @@ func (controller Controller) Update(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "invalid_request_format")
 	}
-	res, err := controller.service.Update(req)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, err)
-	}
+	res, _ := controller.service.Update(req)
 	return c.JSON(res.Code, res)
 }
 
@@ -45,10 +39,7 @@ func (controller Controller) Delete(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "invalid_request_format")
 	}
-	res, err := controller.service.Delete(req)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, err)
-	}
+	res, _ := controller.service.Delete(req)
 	return c.JSON(res.Code, res)
 }
 
@@ -58,19 +49,13 @@ func (controller Controller) GetByID(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "invalid_request_format")
 	}
-	res, err := controller.service.GetByID(req)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, err)
-	}
+	res, _ := controller.service.GetByID(req)
 	return c.JSON(res.Code, res)
 }
 
 func (controller Controller) GetSome(c echo.Context) error {
 	offset := c.QueryParam("offset")
 	limit := c.QueryParam("limit")
-	res, err := controller.service.GetSome(offset, limit)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, err)
-	}
+	res, _ := controller.service.GetSome(offset, limit)
 	return c.JSON(res.Code, res)
 }

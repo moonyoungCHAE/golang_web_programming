@@ -15,13 +15,12 @@ func NewService(repository Repository) *Service {
 
 func (service *Service) Create(request CreateRequest) (CreateResponse, error) {
 	if err := service.ValidateCreate(request); err != nil {
-		return CreateResponse{}, err
+		return CreateResponse{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		}, err
 	}
-	membership := Membership{
-		ID:             uuid.NewString(),
-		UserName:       request.UserName,
-		MembershipType: request.MembershipType,
-	}
+	membership := Membership{ID: uuid.NewString(), UserName: request.UserName, MembershipType: request.MembershipType}
 	service.repository.Create(membership)
 	return CreateResponse{
 		Code:           http.StatusCreated,
@@ -33,13 +32,12 @@ func (service *Service) Create(request CreateRequest) (CreateResponse, error) {
 
 func (service *Service) Update(request UpdateRequest) (UpdateResponse, error) {
 	if err := service.ValidateUpdate(request); err != nil {
-		return UpdateResponse{}, err
+		return UpdateResponse{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		}, err
 	}
-	membership := Membership{
-		ID:             request.ID,
-		UserName:       request.UserName,
-		MembershipType: request.MembershipType,
-	}
+	membership := Membership{ID: request.ID, UserName: request.UserName, MembershipType: request.MembershipType}
 	service.repository.Update(membership)
 	return UpdateResponse{
 		Code:           http.StatusOK,
@@ -52,7 +50,10 @@ func (service *Service) Update(request UpdateRequest) (UpdateResponse, error) {
 
 func (service *Service) Delete(id string) (DeleteResponse, error) {
 	if err := service.ValidateDelete(id); err != nil {
-		return DeleteResponse{}, err
+		return DeleteResponse{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		}, err
 	}
 	service.repository.Delete(id)
 	return DeleteResponse{
