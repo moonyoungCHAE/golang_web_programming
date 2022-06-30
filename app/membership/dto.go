@@ -6,6 +6,8 @@ type CreateRequest struct {
 }
 
 type CreateResponse struct {
+	Code           int
+	Message        string
 	ID             string
 	MembershipType string
 }
@@ -17,6 +19,8 @@ type UpdateRequest struct {
 }
 
 type UpdateResponse struct {
+	Code           int
+	Message        string
 	ID             string
 	UserName       string
 	MembershipType string
