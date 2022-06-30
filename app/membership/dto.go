@@ -1,8 +1,8 @@
 package membership
 
 type CreateRequest struct {
-	UserName       string
-	MembershipType string
+	UserName       string `json:"user-name"`
+	MembershipType string `json:"membership-type"`
 }
 
 type CreateResponse struct {
@@ -13,9 +13,9 @@ type CreateResponse struct {
 }
 
 type UpdateRequest struct {
-	ID             string
-	UserName       string
-	MembershipType string
+	ID             string `json:"id"`
+	UserName       string `json:"user-name"`
+	MembershipType string `json:"membership-type"`
 }
 
 type UpdateResponse struct {
@@ -37,4 +37,10 @@ type GetResponse struct {
 	ID             string
 	UserName       string
 	MembershipType string
+}
+
+type GetSomeResponse struct {
+	Code       int          `json:"-"` // 코드는 사용자에게 안 보여줄 거니까
+	Message    string       `json:"message"`
+	Membership []Membership `json:"membership"`
 }
