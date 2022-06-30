@@ -7,21 +7,10 @@ type Repository struct {
 func NewRepository(data map[string]Membership) *Repository {
 	return &Repository{data: data}
 }
-func (app *Application) AddData(membership Membership) CreateResponse {
-	app.repository.data[membership.ID] = membership
-
-	return CreateResponse{
-		app.repository.data[membership.ID].ID,
-		app.repository.data[membership.ID].MembershipType,
-	}
+func (r *Repository) Create(membership Membership) {
+	r.data[membership.ID] = membership
 }
 
-func (app *Application) FixData(membership Membership) UpdateResponse {
-	app.repository.data[membership.UserName] = membership
-
-	return UpdateResponse{
-		app.repository.data[membership.UserName].ID,
-		app.repository.data[membership.UserName].UserName,
-		app.repository.data[membership.UserName].MembershipType,
-	}
+func (r *Repository) Update(membership Membership) {
+	r.data[membership.UserName] = membership
 }
