@@ -96,12 +96,6 @@ func (service *Service) GetSome(offset string, limit string) (GetSomeResponse, e
 }
 
 func (service *Service) GetAll(id string) (GetSomeResponse, error) {
-	if err := service.ValidateGetAll(id); err != nil {
-		return GetSomeResponse{
-			Code:    http.StatusBadRequest,
-			Message: err.Error(),
-		}, err
-	}
 	var res []Membership
 	res = service.repository.GetAll()
 	return GetSomeResponse{

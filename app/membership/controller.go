@@ -14,7 +14,10 @@ func NewController(service Service) *Controller {
 }
 
 func (controller Controller) Create(c echo.Context) error {
-	var req CreateRequest
+	req := CreateRequest{
+		c.FormValue("UserName"),
+		c.FormValue("MembershipType"),
+	}
 	err := c.Bind(&req)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "invalid_request_format")
@@ -24,7 +27,11 @@ func (controller Controller) Create(c echo.Context) error {
 }
 
 func (controller Controller) Update(c echo.Context) error {
-	var req UpdateRequest
+	req := UpdateRequest{
+		c.FormValue("ID"),
+		c.FormValue("UserName"),
+		c.FormValue("MembershipType"),
+	}
 	err := c.Bind(&req)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "invalid_request_format")
@@ -34,7 +41,7 @@ func (controller Controller) Update(c echo.Context) error {
 }
 
 func (controller Controller) Delete(c echo.Context) error {
-	var req string
+	req := c.Param("id")
 	err := c.Bind(&req)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "invalid_request_format")
@@ -44,7 +51,7 @@ func (controller Controller) Delete(c echo.Context) error {
 }
 
 func (controller Controller) GetByID(c echo.Context) error {
-	var req string
+	req := c.Param("id")
 	err := c.Bind(&req)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "invalid_request_format")
@@ -61,7 +68,7 @@ func (controller Controller) GetSome(c echo.Context) error {
 }
 
 func (controller Controller) GetAll(c echo.Context) error {
-	var req string
+	req := c.Param("id")
 	err := c.Bind(&req)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "invalid_request_format")

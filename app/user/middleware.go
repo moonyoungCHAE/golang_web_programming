@@ -2,7 +2,6 @@ package user
 
 import (
 	"github.com/boldfaced7/golang_web_programming/app/membership"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
 )
 
@@ -16,21 +15,42 @@ func NewMiddleware(membershipRepository membership.Repository) *Middleware {
 
 func (m Middleware) ValidateAdmin(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		user := c.Get("user").(*jwt.Token)
+		/*user := c.Get("user").(*jwt.Token)
 		claims := user.Claims.(*Claims)
+
 		if !claims.IsAdmin {
 			return echo.ErrUnauthorized
-		}
+		} */
 		return next(c)
 	}
 }
 
 func (m Middleware) ValidateMember(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
+
+		/*
+			user := c.Get("user").(*jwt.Token)
+			claims := user.Claims.(*Claims)
+
+			if claims.IsAdmin {
+				return echo.ErrUnauthorized
+			}
+
+		*/
+		return next(c)
+	}
+}
+
+/*
+func (m Middleware) ValidateMember(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		user := c.Get("user").(*jwt.Token)
+		claims := user.Claims.(*Claims)
+
 		memberships := m.membershipRepository.GetAll()
 		var isMember bool
 		for _, mem := range memberships {
-			if mem.ID == c.Param("id") {
+			if mem.ID == claims.Name {
 				isMember = true
 			}
 		}
@@ -40,3 +60,4 @@ func (m Middleware) ValidateMember(next echo.HandlerFunc) echo.HandlerFunc {
 		return next(c)
 	}
 }
+*/
