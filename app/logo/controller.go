@@ -15,7 +15,7 @@ func NewController() *Controller {
 }
 
 func (controller Controller) Get(c echo.Context) error {
-	url := "./assets/memebership.png"
+	url := "./assets/membership.png"
 	file, err := os.Stat(url)
 	if err != nil {
 		return echo.ErrInternalServerError
