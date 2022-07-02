@@ -16,6 +16,7 @@ var (
 
 	NoIdErr         = errors.New("no_ID")
 	NoNameErr       = errors.New("no_name")
+	NoAdminErr      = errors.New("no_admin")
 	NoLimitErr      = errors.New("no_limit")
 	NoOffsetErr     = errors.New("no_offset")
 	NoMembershipErr = errors.New("no_membership")
@@ -97,6 +98,16 @@ func (service *Service) ValidateGetSome(offset string, limit string) error {
 	l, _ := strconv.Atoi(limit)
 	if o+l < len(service.repository.data) {
 		return OutOfBoundErr
+	}
+	return nil
+}
+
+func (service *Service) ValidateGetAll(id string) error {
+	if id == "" {
+		return NoIdErr
+	}
+	if id != "admin" {
+		return NoAdminErr
 	}
 	return nil
 }

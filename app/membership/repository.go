@@ -38,3 +38,11 @@ func (r *Repository) GetSome(offset string, limit string) []Membership {
 	}
 	return res[o : o+l]
 }
+
+func (r *Repository) GetAll() []Membership {
+	var res []Membership
+	for _, val := range r.data {
+		res = append(res, val)
+	}
+	return res
+}

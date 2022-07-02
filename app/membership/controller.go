@@ -59,3 +59,13 @@ func (controller Controller) GetSome(c echo.Context) error {
 	res, _ := controller.service.GetSome(offset, limit)
 	return c.JSON(res.Code, res)
 }
+
+func (controller Controller) GetAll(c echo.Context) error {
+	var req string
+	err := c.Bind(&req)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "invalid_request_format")
+	}
+	res, _ := controller.service.GetAll(req)
+	return c.JSON(res.Code, res)
+}

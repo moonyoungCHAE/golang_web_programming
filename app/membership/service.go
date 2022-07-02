@@ -64,7 +64,10 @@ func (service *Service) Delete(id string) (DeleteResponse, error) {
 
 func (service *Service) GetByID(id string) (GetResponse, error) {
 	if err := service.ValidateGetByID(id); err != nil {
-		return GetResponse{}, err
+		return GetResponse{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		}, err
 	}
 	membership := service.repository.GetByID(id)
 	return GetResponse{
@@ -78,10 +81,29 @@ func (service *Service) GetByID(id string) (GetResponse, error) {
 
 func (service *Service) GetSome(offset string, limit string) (GetSomeResponse, error) {
 	if err := service.ValidateGetSome(offset, limit); err != nil {
-		return GetSomeResponse{}, err
+		return GetSomeResponse{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		}, err
 	}
 	var res []Membership
 	res = service.repository.GetSome(offset, limit)
+	return GetSomeResponse{
+		Code:       http.StatusOK,
+		Message:    http.StatusText(http.StatusOK),
+		Membership: res,
+	}, nil
+}
+
+func (service *Service) GetAll(id string) (GetSomeResponse, error) {
+	if err := service.ValidateGetAll(id); err != nil {
+		return GetSomeResponse{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		}, err
+	}
+	var res []Membership
+	res = service.repository.GetAll()
 	return GetSomeResponse{
 		Code:       http.StatusOK,
 		Message:    http.StatusText(http.StatusOK),
