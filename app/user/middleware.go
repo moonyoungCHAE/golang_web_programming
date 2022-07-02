@@ -27,7 +27,16 @@ func (m Middleware) ValidateAdmin(next echo.HandlerFunc) echo.HandlerFunc {
 
 func (m Middleware) ValidateMember(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		panic("implement me")
+		memberships := m.membershipRepository.GetAll()
+		var isMember bool
+		for _, mem := range memberships {
+			if mem.ID == c.Param("id") {
+				isMember = true
+			}
+		}
+		if !isMember {
+			return echo.ErrUnauthorized
+		}
 		return next(c)
 	}
 }
