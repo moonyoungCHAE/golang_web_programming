@@ -3,7 +3,8 @@ package logo
 import (
 	"crypto/md5"
 	"fmt"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
+	"net/http"
 	"os"
 )
 
@@ -24,5 +25,9 @@ func (controller Controller) Get(c echo.Context) error {
 	modifiedTime := file.ModTime()
 	etag := fmt.Sprintf("%x", md5.Sum([]byte(modifiedTime.String())))
 	c.Response().Header().Set("ETag", etag)
+
+	if c.Request().Header.Get("If-None-Match") == "" {
+		c.JSON(http.StatusNotModified, http.StatusText(http.StatusNotModified))
+	}
 	return c.File(url)
 }
