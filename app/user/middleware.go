@@ -3,7 +3,7 @@ package user
 import (
 	"github.com/boldfaced7/golang_web_programming/app/membership"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 type Middleware struct {
