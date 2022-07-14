@@ -2,18 +2,20 @@ package practice
 
 import (
 	"context"
+
 	"log"
 	"strings"
 	"sync"
 	"testing"
 	"time"
-
 	"github.com/stretchr/testify/assert"
+
 )
 
 // golang 학습 테스트
 func TestGolang(t *testing.T) {
 	t.Run("string test", func(t *testing.T) {
+
 		str := "Ann,Jenny,Tom,Zico"
 		// TODO str을 , 단위로 잘라주세요.
 		actual := strings.Split(str, ",")
@@ -46,6 +48,7 @@ func TestGolang(t *testing.T) {
 		for i := 0; i < 100; i++ {
 			expected[i] = i
 		}
+
 		assert.ElementsMatch(t, expected, numbers)
 	})
 
@@ -94,6 +97,7 @@ func TestGolang(t *testing.T) {
 		//두 번째 파라미터로 전달한 duration이 지나면  여기선 cancle(), 컨텍스트에 취소 신호가 전달된다.
 		defer cancel()
 
+
 		var endTime time.Time
 		select {
 		case <-ctx.Done():
@@ -132,6 +136,7 @@ func TestGolang(t *testing.T) {
 		assert.Equal(t, ctx.Value("job"), "devloper")
 		// 추가되지 않은 key에 대한 value를 assert로 검증해보세요.
 		assert.Nil(t, ctx.Value("name"))
+
 	})
 }
 
