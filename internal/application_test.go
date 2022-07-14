@@ -1,8 +1,10 @@
 package internal
 
 import (
-	"github.com/stretchr/testify/assert"
+	"errors"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCreateMembership(t *testing.T) {
@@ -16,19 +18,57 @@ func TestCreateMembership(t *testing.T) {
 	})
 
 	t.Run("이미 등록된 사용자 이름이 존재할 경우 실패한다.", func(t *testing.T) {
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+		req := CreateRequest{"jenny", "naver"}
+		app.Create(req)
 
+		existedNameReq := CreateRequest{
+			UserName:       "jenny",
+			MembershipType: "naver",
+		}
+
+		_, err := app.Create(existedNameReq)
+		if assert.Error(t, err) {
+			assert.Equal(t, errors.New("already existed user_name"), err)
+		}
 	})
-
 	t.Run("사용자 이름을 입력하지 않은 경우 실패한다.", func(t *testing.T) {
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+		req := CreateRequest{
+			UserName:       "",
+			MembershipType: "naver",
+		}
 
+		_, err := app.Create(req)
+		if assert.Error(t, err) {
+			assert.Equal(t, errors.New("need user_name"), err)
+		}
 	})
 
 	t.Run("멤버십 타입을 입력하지 않은 경우 실패한다.", func(t *testing.T) {
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+		req := CreateRequest{
+			UserName:       "jenny",
+			MembershipType: "",
+		}
 
+		_, err := app.Create(req)
+		if assert.Error(t, err) {
+			assert.Equal(t, errors.New("need membership type"), err)
+		}
 	})
 
 	t.Run("naver/toss/payco 이외의 타입을 입력한 경우 실패한다.", func(t *testing.T) {
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+		req := CreateRequest{
+			UserName:       "jenny",
+			MembershipType: "kakao",
+		}
 
+		_, err := app.Create(req)
+		if assert.Error(t, err) {
+			assert.Equal(t, errors.New("choose membership type : naver, payco, toss"), err)
+		}
 	})
 }
 
