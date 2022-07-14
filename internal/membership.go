@@ -41,16 +41,16 @@ func (m *MembershipGenerator) GetMembership() (*Membership, error) {
 
 func (m *MembershipGenerator) validateMembership() error {
 	if m.Membership.ID == "" {
-		return errors.New("Need ID")
+		return errors.New("need id")
 	}
 	if m.Membership.UserName == "" {
-		return errors.New("Need UserName")
+		return errors.New("need user_name")
 	}
 	if m.Membership.MembershipType == "" {
-		return errors.New("Need Membership Type")
+		return errors.New("need membership type")
 	}
 	if !(m.Membership.MembershipType == "naver" || m.Membership.MembershipType == "payco" || m.Membership.MembershipType == "toss") {
-		return errors.New("Choose Membership Type : naver, payco, toss")
+		return errors.New("choose membership type : naver, payco, toss")
 	}
 	return nil
 }
