@@ -1,9 +1,12 @@
 package practice
 
 import (
+	"context"
+	"log"
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -46,69 +49,90 @@ func TestGolang(t *testing.T) {
 		assert.ElementsMatch(t, expected, numbers)
 	})
 
-	// t.Run("fan out, fan in", func(t *testing.T) {
-	// 	/*
-	// 		TODO 주어진 코드를 수정해서 테스트가 통과하도록 해주세요!
+	t.Run("fan out, fan in", func(t *testing.T) {
+		/*
+			TODO 주어진 코드를 수정해서 테스트가 통과하도록 해주세요!
 
-	// 		- inputCh에 1, 2, 3 값을 넣는다.
-	// 		- inputCh로 부터 값을 받아와, value * 10 을 한 후 outputCh에 값을 넣어준다.
-	// 		- outputCh에서 읽어온 값을 비교한다.
-	// 	*/
+			- inputCh에 1, 2, 3 값을 넣는다.
+			- inputCh로 부터 값을 받아와, value * 10 을 한 후 outputCh에 값을 넣어준다.
+			- outputCh에서 읽어온 값을 비교한다.
+		*/
 
-	// 	inputCh := generate()
-	// 	outputCh := make(chan int)
-	// 	go func() {
-	// 		for {
-	// 			select {
-	// 			case value := <-inputCh:
-	// 				outputCh <- value * 10
-	// 			}
-	// 		}
-	// 	}()
+		inputCh := generate()
+		outputCh := make(chan int, 3)
+		go func(inputCh <-chan int) {
+			for {
+				select {
+				case value, ok := <-inputCh:
 
-	// 	var actual []int
-	// 	for value := range outputCh {
-	// 		actual = append(actual, value)
-	// 	}
-	// 	expected := []int{10, 20, 30}
-	// 	assert.Equal(t, expected, actual)
-	// })
+					outputCh <- value * 10
+					if !ok {
+						//log.Panic("input channel closed") Panic을 쓰면 아래 테스트케이스에서 Fail처리됨...
+						log.Println("input channel closed")
+						close(outputCh)
+						return
+					}
+				}
+			}
+		}(inputCh)
 
-	// t.Run("context timeout", func(t *testing.T) {
-	// 	startTime := time.Now()
-	// 	add := time.Second * 3
-	// 	ctx := context.TODO() // TODO 3초후에 종료하는 timeout context로 만들어주세요.
+		var actual []int
+		for i := 0; i < 3; i++ {
+			actual = append(actual, <-outputCh)
+		}
 
-	// 	var endTime time.Time
-	// 	select {
-	// 	case <-ctx.Done():
-	// 		endTime = time.Now()
-	// 		break
-	// 	}
+		expected := []int{10, 20, 30}
+		assert.Equal(t, expected, actual)
+	})
 
-	// 	assert.True(t, endTime.After(startTime.Add(add)))
-	// })
+	t.Run("context timeout", func(t *testing.T) {
+		startTime := time.Now()
+		add := time.Second * 3
+		ctx := context.TODO()
+		// TODO 3초후에 종료하는 timeout context로 만들어주세요.
+		ctx, cancel := context.WithTimeout(ctx, add)
+		//두 번째 파라미터로 전달한 duration이 지나면  여기선 cancle(), 컨텍스트에 취소 신호가 전달된다.
+		defer cancel()
 
-	// t.Run("context deadline", func(t *testing.T) {
-	// 	startTime := time.Now()
-	// 	add := time.Second * 3
-	// 	ctx := context.TODO() // TODO 3초후에 종료하는 timeout context로 만들어주세요.
+		var endTime time.Time
+		select {
+		case <-ctx.Done():
+			endTime = time.Now()
 
-	// 	var endTime time.Time
-	// 	select {
-	// 	case <-ctx.Done():
-	// 		endTime = time.Now()
-	// 		break
-	// 	}
+			break
+		}
 
-	// 	assert.True(t, endTime.After(startTime.Add(add)))
-	// })
+		assert.True(t, endTime.After(startTime.Add(add)))
+	})
 
-	// t.Run("context value", func(t *testing.T) {
-	// 	// context에 key, value를 추가해보세요.
-	// 	// 추가된 key, value를 호출하여 assert로 값을 검증해보세요.
-	// 	// 추가되지 않은 key에 대한 value를 assert로 검증해보세요.
-	// })
+	t.Run("context deadline", func(t *testing.T) {
+		startTime := time.Now()
+		add := time.Second * 3
+		ctx := context.TODO()
+		// TODO 3초후에 종료하는 timeout context로 만들어주세요.
+		// 두 번째 파라미터로 time.Time 값을 받는데, 이 시간이 되면 컨텍스트에 취소 신호가 전달된다
+		ctx, cancel := context.WithDeadline(ctx, startTime.Add(add))
+		defer cancel()
+
+		var endTime time.Time
+		select {
+		case <-ctx.Done():
+			endTime = time.Now()
+			break
+		}
+
+		assert.True(t, endTime.After(startTime.Add(add)))
+	})
+
+	t.Run("context value", func(t *testing.T) {
+		// context에 key, value를 추가해보세요.
+		ctx := context.TODO()
+		ctx = context.WithValue(ctx, "job", "devloper")
+		// 추가된 key, value를 호출하여 assert로 값을 검증해보세요.
+		assert.Equal(t, ctx.Value("job"), "devloper")
+		// 추가되지 않은 key에 대한 value를 assert로 검증해보세요.
+		assert.Nil(t, ctx.Value("name"))
+	})
 }
 
 func generate() <-chan int {
