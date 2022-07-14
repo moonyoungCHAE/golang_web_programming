@@ -32,7 +32,7 @@ func (app *Application) Create(request CreateRequest) (CreateResponse, error) {
 	}
 
 	_, err = app.repository.
-		AddRepository(*membership)
+		CraateRepositoryData(*membership)
 	if err != nil {
 		return CreateResponse{}, err
 	}
@@ -50,7 +50,7 @@ func (app *Application) Update(request UpdateRequest) (UpdateResponse, error) {
 		return UpdateResponse{}, err
 	}
 
-	_, err = app.repository.UpdateRepository(*newMembership)
+	_, err = app.repository.UpdateRepositoryData(*newMembership)
 	if err != nil {
 		return UpdateResponse{}, err
 	}
@@ -63,5 +63,18 @@ func (app *Application) Update(request UpdateRequest) (UpdateResponse, error) {
 }
 
 func (app *Application) Delete(id string) error {
+	m := app.repository.data[id]
+	membership, err := NewMembershipGenerator().
+		SetID(m.ID).
+		SetUserName(m.UserName).
+		SetMembershipType(m.MembershipType).
+		GetMembership()
+	if err != nil {
+		return err
+	}
+	err = app.repository.DeleteRepositoryData(*membership)
+	if err != nil {
+		return err
+	}
 	return nil
 }

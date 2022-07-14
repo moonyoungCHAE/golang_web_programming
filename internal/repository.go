@@ -10,7 +10,7 @@ func NewRepository(data map[string]Membership) *Repository {
 	return &Repository{data: data}
 }
 
-func (r *Repository) AddRepository(m Membership) (Membership, error) {
+func (r *Repository) CraateRepositoryData(m Membership) (Membership, error) {
 	for _, membership := range r.data {
 		if membership.UserName == m.UserName {
 			return Membership{}, errors.New("already existed user_name")
@@ -20,7 +20,7 @@ func (r *Repository) AddRepository(m Membership) (Membership, error) {
 	return m, nil
 }
 
-func (r *Repository) UpdateRepository(m Membership) (Membership, error) {
+func (r *Repository) UpdateRepositoryData(m Membership) (Membership, error) {
 	for _, membership := range r.data {
 		if membership.ID == m.ID {
 			continue
@@ -31,4 +31,13 @@ func (r *Repository) UpdateRepository(m Membership) (Membership, error) {
 	}
 	r.data[m.ID] = m
 	return m, nil
+}
+
+func (r *Repository) DeleteRepositoryData(membership Membership) error {
+	_, ok := r.data[membership.ID]
+	if ok {
+		delete(r.data, membership.ID)
+		return nil
+	}
+	return errors.New("not exist id")
 }
