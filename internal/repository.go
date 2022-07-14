@@ -19,3 +19,8 @@ func (r *Repository) AddRepository(m Membership) (Membership, error) {
 	r.data[m.ID] = m
 	return m, nil
 }
+
+func (r *Repository) UpdateRepository(m Membership) (Membership, error) {
+	r.data[m.ID] = m
+	return m, nil
+}

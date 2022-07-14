@@ -41,7 +41,25 @@ func (app *Application) Create(request CreateRequest) (CreateResponse, error) {
 }
 
 func (app *Application) Update(request UpdateRequest) (UpdateResponse, error) {
-	return UpdateResponse{}, nil
+	newMembership, err := NewMembershipGenerator().
+		SetID(request.ID).
+		SetUserName(request.UserName).
+		SetMembershipType(request.MembershipType).
+		GetMembership()
+	if err != nil {
+		return UpdateResponse{}, err
+	}
+
+	_, err = app.repository.UpdateRepository(*newMembership)
+	if err != nil {
+		return UpdateResponse{}, err
+	}
+
+	return UpdateResponse{
+		ID:             newMembership.ID,
+		UserName:       newMembership.UserName,
+		MembershipType: newMembership.MembershipType,
+	}, nil
 }
 
 func (app *Application) Delete(id string) error {
