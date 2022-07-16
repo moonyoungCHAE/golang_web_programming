@@ -10,6 +10,16 @@ type CreateResponse struct {
 	MembershipType string
 }
 
+type ReadRequest struct {
+	ID string
+}
+
+type ReadResponse struct {
+	ID             string
+	UserName       string
+	MembershipType string
+}
+
 type UpdateRequest struct {
 	ID             string
 	UserName       string
@@ -17,6 +27,16 @@ type UpdateRequest struct {
 }
 
 type UpdateResponse struct {
+	ID             string
+	UserName       string
+	MembershipType string
+}
+
+type DeleteRequest struct {
+	ID string
+}
+
+type DeleteResponse struct {
 	ID             string
 	UserName       string
 	MembershipType string
