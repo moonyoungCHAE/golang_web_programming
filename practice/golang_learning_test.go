@@ -68,7 +68,6 @@ func TestGolang(t *testing.T) {
 		startTime := time.Now()
 		add := time.Second * 3
 		ctx, _ := context.WithTimeout(context.Background(), add)
-
 		var endTime time.Time
 		select {
 		case <-ctx.Done():
