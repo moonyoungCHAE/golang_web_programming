@@ -23,10 +23,10 @@ func TestGolang(t *testing.T) {
 		var wg sync.WaitGroup
 		for i := 0; i < 100; i++ {
 			wg.Add(1)
-			i2 := i
+			i := i
 			go func() {
 				defer wg.Done()
-				numbers[i2] = i2
+				numbers[i] = i
 			}()
 		}
 
@@ -97,7 +97,7 @@ func TestGolang(t *testing.T) {
 	t.Run("context value", func(t *testing.T) {
 		ctx := context.WithValue(context.Background(), "key", "value")
 		assert.Equal(t, "value", ctx.Value("key"))
-		assert.Equal(t, "august", ctx.Value("key"))
+		assert.Empty(t, ctx.Value("key2"))
 	})
 }
 

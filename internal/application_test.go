@@ -21,28 +21,28 @@ func TestCreateMembership(t *testing.T) {
 		req := CreateRequest{"jenny", "naver"}
 		app.Create(req)
 		_, err := app.Create(req)
-		assert.EqualError(t, err, "user name already exists")
+		assert.ErrorIs(t, err, ErrUserAlreadyExists)
 	})
 
 	t.Run("사용자 이름을 입력하지 않은 경우 실패한다.", func(t *testing.T) {
 		app := NewApplication(*NewRepository(map[string]Membership{}))
 		req := CreateRequest{"", "naver"}
 		_, err := app.Create(req)
-		assert.EqualError(t, err, "user name is required")
+		assert.ErrorIs(t, err, ErrUserNameIsRequired)
 	})
 
 	t.Run("멤버십 타입을 입력하지 않은 경우 실패한다.", func(t *testing.T) {
 		app := NewApplication(*NewRepository(map[string]Membership{}))
 		req := CreateRequest{"jenny", ""}
 		_, err := app.Create(req)
-		assert.EqualError(t, err, "membership type is required")
+		assert.ErrorIs(t, err, ErrMembershipTypeIsRequired)
 	})
 
 	t.Run("naver/toss/payco 이외의 타입을 입력한 경우 실패한다.", func(t *testing.T) {
 		app := NewApplication(*NewRepository(map[string]Membership{}))
 		req := CreateRequest{"jenny", "facebook"}
 		_, err := app.Create(req)
-		assert.EqualError(t, err, "invalid membership type")
+		assert.ErrorIs(t, err, ErrInvalidMembershipType)
 	})
 }
 
@@ -60,14 +60,14 @@ func TestRead(t *testing.T) {
 		app := NewApplication(*NewRepository(map[string]Membership{}))
 		req := ReadRequest{""}
 		_, err := app.Read(req)
-		assert.EqualError(t, err, "id is required")
+		assert.ErrorIs(t, err, ErrUserNameIsRequired)
 	})
 
 	t.Run("입력한 id가 존재하지 않을 때 예외 처리한다.", func(t *testing.T) {
 		app := NewApplication(*NewRepository(map[string]Membership{}))
 		req := ReadRequest{"12345"}
 		_, err := app.Read(req)
-		assert.EqualError(t, err, "id not found")
+		assert.ErrorIs(t, err, ErrUserIDNotFound)
 	})
 }
 
@@ -94,14 +94,14 @@ func TestUpdate(t *testing.T) {
 			MembershipType: "toss",
 		}
 		_, err := app.Update(updateReq)
-		assert.EqualError(t, err, "user name already exists")
+		assert.ErrorIs(t, err, ErrUserAlreadyExists)
 	})
 
 	t.Run("멤버십 아이디를 입력하지 않은 경우, 예외 처리한다.", func(t *testing.T) {
 		app := NewApplication(*NewRepository(map[string]Membership{}))
-		req := UpdateRequest{UserName: "jenny", ID: "", MembershipType: "toss"}
+		req := UpdateRequest{UserName: "jenny", ID: "123", MembershipType: ""}
 		_, err := app.Update(req)
-		assert.EqualError(t, err, "id is required")
+		assert.ErrorIs(t, err, ErrMembershipTypeIsRequired)
 	})
 
 	t.Run("사용자 이름을 입력하지 않은 경우, 예외 처리한다.", func(t *testing.T) {
@@ -109,7 +109,7 @@ func TestUpdate(t *testing.T) {
 		id := uuid.New().String()
 		req := UpdateRequest{id, "", "toss"}
 		_, err := app.Update(req)
-		assert.EqualError(t, err, "user name is required")
+		assert.ErrorIs(t, err, ErrUserNameIsRequired)
 	})
 
 	t.Run("멤버쉽 타입을 입력하지 않은 경우, 예외 처리한다.", func(t *testing.T) {
@@ -117,7 +117,7 @@ func TestUpdate(t *testing.T) {
 		id := uuid.New().String()
 		req := UpdateRequest{id, "jenny", ""}
 		_, err := app.Update(req)
-		assert.EqualError(t, err, "membership type is required")
+		assert.Error(t, err, ErrMembershipTypeIsRequired)
 	})
 
 	t.Run("주어진 멤버쉽 타입이 아닌 경우, 예외 처리한다.", func(t *testing.T) {
@@ -125,7 +125,7 @@ func TestUpdate(t *testing.T) {
 		id := uuid.New().String()
 		req := UpdateRequest{id, "jenny", "facebook"}
 		_, err := app.Update(req)
-		assert.EqualError(t, err, "invalid membership type")
+		assert.ErrorIs(t, err, ErrInvalidMembershipType)
 	})
 }
 
@@ -136,22 +136,20 @@ func TestDelete(t *testing.T) {
 		res, _ := app.Create(req)
 		deleteReq := DeleteRequest{ID: res.ID}
 		deleteRes, _ := app.Delete(deleteReq)
-		assert.Equal(t, res.ID, deleteRes.ID)
+		assert.Equal(t, req.UserName, deleteRes.UserName)
 	})
 
 	t.Run("id를 입력하지 않았을 때 예외 처리한다.", func(t *testing.T) {
 		app := NewApplication(*NewRepository(map[string]Membership{}))
-		req := CreateRequest{UserName: "jenny", MembershipType: "naver"}
-		app.Create(req)
 		deleteReq := DeleteRequest{ID: ""}
 		_, err := app.Delete(deleteReq)
-		assert.EqualError(t, err, "id is required")
+		assert.ErrorIs(t, err, ErrUserIDIsRequired)
 	})
 
 	t.Run("입력한 id가 존재하지 않을 때 예외 처리한다.", func(t *testing.T) {
 		app := NewApplication(*NewRepository(map[string]Membership{}))
-		req := DeleteRequest{ID: "12345"}
+		req := DeleteRequest{ID: "123"}
 		_, err := app.Delete(req)
-		assert.EqualError(t, err, "id not found")
+		assert.ErrorIs(t, err, ErrUserIDNotFound)
 	})
 }

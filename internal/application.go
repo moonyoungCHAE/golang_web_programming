@@ -2,7 +2,6 @@ package internal
 
 import (
 	"errors"
-	"github.com/google/uuid"
 )
 
 var (
@@ -10,8 +9,8 @@ var (
 	ErrUserNameIsRequired       = errors.New("user name is required")
 	ErrMembershipTypeIsRequired = errors.New("membership type is required")
 	ErrInvalidMembershipType    = errors.New("invalid membership type")
-
-	ErrUserIDNotFound = errors.New("user id not found")
+	ErrUserIDNotFound           = errors.New("user id not found")
+	ErrUserIDIsRequired         = errors.New("user id is required")
 )
 
 type Application struct {
@@ -23,9 +22,6 @@ func NewApplication(repository Repository) *Application {
 }
 
 func (app *Application) Create(request CreateRequest) (CreateResponse, error) {
-	if _, ok := app.repository.data[request.UserName]; ok {
-		return CreateResponse{}, ErrUserAlreadyExists
-	}
 	if request.UserName == "" {
 		return CreateResponse{}, ErrUserNameIsRequired
 	}
@@ -35,20 +31,18 @@ func (app *Application) Create(request CreateRequest) (CreateResponse, error) {
 	if request.MembershipType != "naver" && request.MembershipType != "toss" && request.MembershipType != "payco" {
 		return CreateResponse{}, ErrInvalidMembershipType
 	}
-
-	app.repository.data[request.UserName] = Membership{
-		ID:             uuid.New().String(),
-		UserName:       request.UserName,
-		MembershipType: request.MembershipType,
+	if app.repository.UserNameExists(request.UserName) {
+		return CreateResponse{}, ErrUserAlreadyExists
 	}
-	return CreateResponse{app.repository.data[request.UserName].ID, app.repository.data[request.UserName].MembershipType}, nil
+
+	return app.repository.Create(request)
 }
 
 func (app *Application) Read(request ReadRequest) (ReadResponse, error) {
 	if request.ID == "" {
-		return ReadResponse{}, ErrUserNameIsRequired
+		return ReadResponse{}, ErrUserIDIsRequired
 	}
-	if _, ok := app.repository.data[request.ID]; !ok {
+	if _, ok := app.repository.GetByID(request.ID); !ok {
 		return ReadResponse{}, ErrUserIDNotFound
 	}
 
@@ -56,36 +50,29 @@ func (app *Application) Read(request ReadRequest) (ReadResponse, error) {
 }
 
 func (app *Application) Update(request UpdateRequest) (UpdateResponse, error) {
-	if _, ok := app.repository.data[request.ID]; !ok {
-		return UpdateResponse{}, ErrUserIDNotFound
+	if request.MembershipType == "" {
+		return UpdateResponse{}, ErrMembershipTypeIsRequired
 	}
 	if request.UserName == "" {
 		return UpdateResponse{}, ErrUserNameIsRequired
 	}
-	if request.MembershipType == "" {
-		return UpdateResponse{}, ErrMembershipTypeIsRequired
-	}
 	if request.MembershipType != "naver" && request.MembershipType != "toss" && request.MembershipType != "payco" {
 		return UpdateResponse{}, ErrInvalidMembershipType
 	}
-
-	app.repository.data[request.ID] = Membership{
-		ID:             request.ID,
-		UserName:       request.UserName,
-		MembershipType: request.MembershipType,
+	if app.repository.UserNameExists(request.UserName) {
+		return UpdateResponse{}, ErrUserAlreadyExists
 	}
-	return UpdateResponse{ID: app.repository.data[request.ID].ID, UserName: app.repository.data[request.ID].UserName, MembershipType: app.repository.data[request.ID].MembershipType}, nil
+
+	return app.repository.Update(request)
 }
 
 func (app *Application) Delete(request DeleteRequest) (DeleteResponse, error) {
 	if request.ID == "" {
-		return DeleteResponse{}, ErrUserNameIsRequired
+		return DeleteResponse{}, ErrUserIDIsRequired
 	}
-	if _, ok := app.repository.data[request.ID]; !ok {
+	if _, ok := app.repository.GetByID(request.ID); !ok {
 		return DeleteResponse{}, ErrUserIDNotFound
 	}
-	res := app.repository.data[request.ID]
-	delete(app.repository.data, request.ID)
 
-	return DeleteResponse{ID: res.ID, UserName: res.UserName, MembershipType: res.MembershipType}, nil
+	return app.repository.Delete(request)
 }
