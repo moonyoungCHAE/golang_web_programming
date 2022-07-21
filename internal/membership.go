@@ -1,7 +1,5 @@
 package internal
 
-import "errors"
-
 type Membership struct {
 	ID             string
 	UserName       string
@@ -41,16 +39,16 @@ func (m *MembershipGenerator) GetMembership() (*Membership, error) {
 
 func (m *MembershipGenerator) validateMembership() error {
 	if m.Membership.ID == "" {
-		return errors.New("need id")
+		return ErrUserIDIsRequired
 	}
 	if m.Membership.UserName == "" {
-		return errors.New("need user_name")
+		return ErrUserNameIsRequired
 	}
 	if m.Membership.MembershipType == "" {
-		return errors.New("need membership type")
+		return ErrMembershipTypeIsRequired
 	}
 	if !(m.Membership.MembershipType == "naver" || m.Membership.MembershipType == "payco" || m.Membership.MembershipType == "toss") {
-		return errors.New("choose membership type : naver, payco, toss")
+		return ErrInvalidMembershipType
 	}
 	return nil
 }

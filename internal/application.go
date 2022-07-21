@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"log"
 	"strconv"
 )
 
@@ -15,11 +14,10 @@ func NewApplication(repository Repository) *Application {
 
 func (app *Application) Create(request CreateRequest) (CreateResponse, error) {
 	membershipBuilder := NewMembershipGenerator()
-	member_repository := app.repository
-	member_count := len(member_repository.data)
+	memberRepository := app.repository
+	memberCount := len(memberRepository.data)
 
-	id := strconv.Itoa(member_count + 1)
-	log.Println(id)
+	id := strconv.Itoa(memberCount + 1)
 
 	membershipBuilder.
 		SetID(id).
@@ -31,8 +29,7 @@ func (app *Application) Create(request CreateRequest) (CreateResponse, error) {
 		return CreateResponse{}, err
 	}
 
-	_, err = app.repository.
-		CraateRepositoryData(*membership)
+	_, err = app.repository.CreateMembership(*membership)
 	if err != nil {
 		return CreateResponse{}, err
 	}
@@ -50,7 +47,7 @@ func (app *Application) Update(request UpdateRequest) (UpdateResponse, error) {
 		return UpdateResponse{}, err
 	}
 
-	_, err = app.repository.UpdateRepositoryData(*newMembership)
+	_, err = app.repository.UpdateMembership(*newMembership)
 	if err != nil {
 		return UpdateResponse{}, err
 	}
@@ -62,19 +59,13 @@ func (app *Application) Update(request UpdateRequest) (UpdateResponse, error) {
 	}, nil
 }
 
-func (app *Application) Delete(id string) error {
-	m := app.repository.data[id]
-	membership, err := NewMembershipGenerator().
-		SetID(m.ID).
-		SetUserName(m.UserName).
-		SetMembershipType(m.MembershipType).
-		GetMembership()
-	if err != nil {
-		return err
+func (app *Application) Delete(request DeleteRequest) (DeleteResponse, error) {
+	if request.ID == "" {
+		return DeleteResponse{}, ErrUserIDIsRequired
 	}
-	err = app.repository.DeleteRepositoryData(*membership)
-	if err != nil {
-		return err
+	if _, ok := app.repository.GetMembershipByID(request.ID); !ok {
+		return DeleteResponse{}, ErrUserIDNotFound
 	}
-	return nil
+
+	return app.repository.DeleteMembership(request)
 }

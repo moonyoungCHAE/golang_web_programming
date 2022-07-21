@@ -1,7 +1,5 @@
 package internal
 
-import "errors"
-
 type Repository struct {
 	data map[string]Membership
 }
@@ -10,34 +8,35 @@ func NewRepository(data map[string]Membership) *Repository {
 	return &Repository{data: data}
 }
 
-func (r *Repository) CraateRepositoryData(m Membership) (Membership, error) {
+func (r *Repository) CreateMembership(m Membership) (Membership, error) {
 	for _, membership := range r.data {
 		if membership.UserName == m.UserName {
-			return Membership{}, errors.New("already existed user_name")
+			return Membership{}, ErrUserAlreadyExists
 		}
 	}
 	r.data[m.ID] = m
 	return m, nil
 }
 
-func (r *Repository) UpdateRepositoryData(m Membership) (Membership, error) {
+func (r *Repository) GetMembershipByID(id string) (Membership, bool) {
+	membership, ok := r.data[id]
+	return membership, ok
+}
+
+func (r *Repository) UpdateMembership(m Membership) (Membership, error) {
 	for _, membership := range r.data {
 		if membership.ID == m.ID {
 			continue
 		}
 		if membership.UserName == m.UserName {
-			return Membership{}, errors.New("already existed name")
+			return Membership{}, ErrUserAlreadyExists
 		}
 	}
 	r.data[m.ID] = m
 	return m, nil
 }
 
-func (r *Repository) DeleteRepositoryData(membership Membership) error {
-	_, ok := r.data[membership.ID]
-	if ok {
-		delete(r.data, membership.ID)
-		return nil
-	}
-	return errors.New("not exist id")
+func (r *Repository) DeleteMembership(req DeleteRequest) (DeleteResponse, error) {
+	delete(r.data, req.ID)
+	return DeleteResponse{ID: req.ID, UserName: r.data[req.ID].UserName, MembershipType: r.data[req.ID].MembershipType}, nil
 }

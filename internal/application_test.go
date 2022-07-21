@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -29,7 +28,7 @@ func TestCreateMembership(t *testing.T) {
 
 		_, err := app.Create(existedNameReq)
 		if assert.Error(t, err) {
-			assert.Equal(t, errors.New("already existed user_name"), err)
+			assert.Equal(t, ErrUserAlreadyExists, err)
 		}
 	})
 	t.Run("사용자 이름을 입력하지 않은 경우 실패한다.", func(t *testing.T) {
@@ -41,7 +40,7 @@ func TestCreateMembership(t *testing.T) {
 
 		_, err := app.Create(req)
 		if assert.Error(t, err) {
-			assert.Equal(t, errors.New("need user_name"), err)
+			assert.Equal(t, ErrUserNameIsRequired, err)
 		}
 	})
 
@@ -54,7 +53,7 @@ func TestCreateMembership(t *testing.T) {
 
 		_, err := app.Create(req)
 		if assert.Error(t, err) {
-			assert.Equal(t, errors.New("need membership type"), err)
+			assert.Equal(t, ErrMembershipTypeIsRequired, err)
 		}
 	})
 
@@ -67,7 +66,7 @@ func TestCreateMembership(t *testing.T) {
 
 		_, err := app.Create(req)
 		if assert.Error(t, err) {
-			assert.Equal(t, errors.New("choose membership type : naver, payco, toss"), err)
+			assert.Equal(t, ErrInvalidMembershipType, err)
 		}
 	})
 }
@@ -109,7 +108,7 @@ func TestUpdate(t *testing.T) {
 		})
 
 		if assert.Error(t, err) {
-			assert.Equal(t, errors.New("already existed name"), err)
+			assert.Equal(t, ErrUserAlreadyExists, err)
 		}
 	})
 
@@ -123,7 +122,7 @@ func TestUpdate(t *testing.T) {
 		})
 
 		if assert.Error(t, err) {
-			assert.Equal(t, errors.New("need id"), err)
+			assert.Equal(t, ErrUserIDIsRequired, err)
 		}
 	})
 
@@ -137,7 +136,7 @@ func TestUpdate(t *testing.T) {
 		})
 
 		if assert.Error(t, err) {
-			assert.Equal(t, errors.New("need user_name"), err)
+			assert.Equal(t, ErrUserNameIsRequired, err)
 		}
 	})
 
@@ -151,7 +150,7 @@ func TestUpdate(t *testing.T) {
 		})
 
 		if assert.Error(t, err) {
-			assert.Equal(t, errors.New("need membership type"), err)
+			assert.Equal(t, ErrMembershipTypeIsRequired, err)
 		}
 	})
 
@@ -165,7 +164,7 @@ func TestUpdate(t *testing.T) {
 		})
 
 		if assert.Error(t, err) {
-			assert.Equal(t, errors.New("choose membership type : naver, payco, toss"), err)
+			assert.Equal(t, ErrInvalidMembershipType, err)
 		}
 	})
 }
@@ -177,34 +176,47 @@ func TestDelete(t *testing.T) {
 			UserName:       "jenny",
 			MembershipType: "naver",
 		})
-
-		err = app.Delete(res.ID)
 		assert.Nil(t, err)
-		assert.Equal(t, Membership{}, app.repository.data[res.ID])
+
+		deleteReq := DeleteRequest{ID: res.ID}
+
+		deleteRes, _ := app.Delete(deleteReq)
+		assert.Equal(t, res.ID, deleteRes.ID)
+
 	})
 
 	t.Run("id를 입력하지 않았을 때 예외 처리한다.", func(t *testing.T) {
 		app := NewApplication(*NewRepository(map[string]Membership{}))
+		_, err := app.Create(CreateRequest{
+			UserName:       "jenny",
+			MembershipType: "naver",
+		})
+		assert.Nil(t, err)
 
-		err := app.Delete("")
+		deleteReq := DeleteRequest{ID: ""}
+		_, err = app.Delete(deleteReq)
 
 		if assert.Error(t, err) {
-			assert.Equal(t, errors.New("need id"), err)
+			assert.Equal(t, ErrUserIDIsRequired, err)
 		}
+
 	})
 
 	t.Run("입력한 id가 존재하지 않을 때 예외 처리한다.", func(t *testing.T) {
 		app := NewApplication(*NewRepository(map[string]Membership{}))
 
-		app.Create(CreateRequest{
+		_, err := app.Create(CreateRequest{
 			UserName:       "jenny",
 			MembershipType: "naver",
 		})
+		assert.Nil(t, err)
 
-		err := app.Delete("uuid")
+		req := DeleteRequest{ID: "uuid"}
+
+		_, err = app.Delete(req)
 
 		if assert.Error(t, err) {
-			assert.Equal(t, errors.New("need id"), err)
+			assert.Equal(t, ErrUserIDNotFound, err)
 		}
 	})
 }

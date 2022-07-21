@@ -21,3 +21,13 @@ type UpdateResponse struct {
 	UserName       string
 	MembershipType string
 }
+
+type DeleteRequest struct {
+	ID string
+}
+
+type DeleteResponse struct {
+	ID             string
+	UserName       string
+	MembershipType string
+}
