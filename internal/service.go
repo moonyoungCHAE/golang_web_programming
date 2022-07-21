@@ -91,8 +91,8 @@ func (service *Service) Update(request UpdateRequest) (UpdateResponse, error) {
 	}, nil
 }
 
-func (s *Service) GetByID(id string) (GetResponse, error) {
-	membership, err := s.repository.GetMembershipByID(id)
+func (service *Service) GetByID(id string) (GetResponse, error) {
+	membership, err := service.repository.GetMembershipByID(id)
 	if err != nil {
 		return GetResponse{}, nil
 	}
@@ -101,4 +101,32 @@ func (s *Service) GetByID(id string) (GetResponse, error) {
 		UserName:       membership.UserName,
 		MembershipType: membership.MembershipType,
 	}, nil
+}
+
+func (service *Service) Delete(request DeleteRequest) (DeleteResponse, error) {
+	if request.ID == "" {
+		return DeleteResponse{
+			Code:    http.StatusBadRequest,
+			Message: "user id is required",
+		}, ErrUserIDIsRequired
+
+	}
+	if _, err := service.repository.GetMembershipByID(request.ID); err != nil {
+		return DeleteResponse{
+			Code:    http.StatusBadRequest,
+			Message: "user id not found",
+		}, ErrUserIDNotFound
+	}
+
+	deleteReq := DeleteRequest{ID: request.ID}
+
+	res, err := service.repository.DeleteMembership(deleteReq)
+	if err != nil {
+		return DeleteResponse{
+			Code:    http.StatusNoContent,
+			Message: err.Error(),
+		}, err
+	}
+
+	return res, nil
 }
