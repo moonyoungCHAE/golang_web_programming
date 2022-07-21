@@ -12,6 +12,18 @@ type CreateResponse struct {
 	Message        string `json:"message"`
 }
 
+type ReadRequest struct {
+	ID string `json:"id"`
+}
+
+type ReadResponse struct {
+	ID             string `json:"id"`
+	UserName       string `json:"user_name"`
+	MembershipType string `json:"membership_type"`
+	Code           int    `json:"code"`
+	Message        string `json:"message"`
+}
+
 type UpdateRequest struct {
 	ID             string `json:"id"`
 	UserName       string `json:"user_name"`

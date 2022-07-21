@@ -57,6 +57,32 @@ func (service *Service) Create(request CreateRequest) (CreateResponse, error) {
 	}, nil
 }
 
+func (app *Service) Read(id string) (ReadResponse, error) {
+
+	if strings.Trim(id, " ") == "" {
+		return ReadResponse{
+			Code:    http.StatusBadRequest,
+			Message: "user id is required",
+		}, ErrUserIDIsRequired
+	}
+	res, err := app.repository.GetMembershipByID(id)
+
+	if err != nil {
+		return ReadResponse{
+			Code:    http.StatusInternalServerError,
+			Message: "user not found",
+		}, ErrUserNotFound
+	}
+
+	return ReadResponse{
+		Code:           http.StatusOK,
+		Message:        "Success",
+		ID:             res.ID,
+		UserName:       res.UserName,
+		MembershipType: res.MembershipType,
+	}, nil
+}
+
 func (service *Service) Update(request UpdateRequest) (UpdateResponse, error) {
 	if strings.Trim(request.ID, " ") == "" || strings.Trim(request.UserName, " ") == "" || strings.Trim(request.MembershipType, " ") == "" {
 		return UpdateResponse{
@@ -123,8 +149,8 @@ func (service *Service) Delete(request DeleteRequest) (DeleteResponse, error) {
 	res, err := service.repository.DeleteMembership(deleteReq)
 	if err != nil {
 		return DeleteResponse{
-			Code:    http.StatusNoContent,
-			Message: err.Error(),
+			Code:    http.StatusInternalServerError,
+			Message: "Can't delete membership",
 		}, err
 	}
 
