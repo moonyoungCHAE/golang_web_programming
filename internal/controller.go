@@ -24,11 +24,19 @@ func (controller *Controller) Create(c echo.Context) error {
 	return c.JSON(http.StatusCreated, res)
 }
 
-func (controller *Controller) GetByID(c echo.Context) error {
+func (controller *Controller) Read(c echo.Context) error {
 	id := c.Param("id")
 	res, err := controller.service.GetByID(id)
 	if err != nil {
 		return echo.ErrInternalServerError
 	}
 	return c.JSON(http.StatusOK, res)
+}
+
+func (controller *Controller) Update(c echo.Context) error {
+	return nil
+}
+
+func (controller *Controller) Delete(c echo.Context) error {
+	return nil
 }

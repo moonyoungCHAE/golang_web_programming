@@ -23,10 +23,6 @@ func NewDefaultServer() *Server {
 	}
 }
 
-func customGenerator() string {
-	return "custom"
-}
-
 func (s *Server) Run() {
 	e := echo.New()
 	s.Routes(e)
@@ -40,7 +36,10 @@ func (s *Server) Routes(e *echo.Echo) {
 }
 
 func RouteMemberships(e *echo.Group, c Controller) {
-	e.GET("/memberships/:id", c.GetByID)
+	e.POST("/", c.Create)
+	e.GET("/:id", c.Read)
+	e.PUT("/:id", c.Update)
+	e.DELETE("/:id", c.Delete)
 
 	e.POST("/memberships", c.Create, middleware.RequestIDWithConfig(middleware.RequestIDConfig{
 		TargetHeader: "X-My-Request-Header",
