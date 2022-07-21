@@ -8,6 +8,8 @@ type CreateRequest struct {
 type CreateResponse struct {
 	ID             string `json:"id"`
 	MembershipType string `json:"membership_type"`
+	Code           int    `json:"code"`
+	Message        string `json:"message"`
 }
 
 type UpdateRequest struct {
@@ -20,6 +22,8 @@ type UpdateResponse struct {
 	ID             string `json:"id"`
 	UserName       string `json:"user_name"`
 	MembershipType string `json:"membership_type"`
+	Code           int    `json:"code"`
+	Message        string `json:"message"`
 }
 
 type DeleteRequest struct {
@@ -30,10 +34,14 @@ type DeleteResponse struct {
 	ID             string `json:"id"`
 	UserName       string `json:"user_name"`
 	MembershipType string `json:"membership_type"`
+	Code           int    `json:"code"`
+	Message        string `json:"message"`
 }
 
 type GetResponse struct {
 	ID             string `json:"id"`
 	UserName       string `json:"user_name"`
 	MembershipType string `json:"membership_type"`
+	Code           int    `json:"code"`
+	Message        string `json:"message"`
 }

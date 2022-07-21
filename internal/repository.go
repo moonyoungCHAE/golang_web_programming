@@ -27,6 +27,15 @@ func (r *Repository) GetMembershipByID(id string) (Membership, error) {
 	return Membership{}, ErrNotFoundMembership
 }
 
+func (r *Repository) GetMembershipByName(userName string) (Membership, error) {
+	for _, membership := range r.data {
+		if membership.UserName == userName {
+			return membership, nil
+		}
+	}
+	return Membership{}, ErrNotFoundMembership
+}
+
 func (r *Repository) UpdateMembership(m Membership) (Membership, error) {
 	for _, membership := range r.data {
 		if membership.ID == m.ID {

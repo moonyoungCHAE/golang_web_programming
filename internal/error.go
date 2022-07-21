@@ -10,4 +10,5 @@ var (
 	ErrUserIDNotFound           = errors.New("user id not found")
 	ErrUserIDIsRequired         = errors.New("user id is required")
 	ErrNotFoundMembership       = errors.New("not found membership")
+	ErrUpdateRequestIsRequired  = errors.New("ID or username or membership_type is nil")
 )
