@@ -145,3 +145,55 @@ func TestUpdate(t *testing.T) {
 		}
 	})
 }
+
+func TestDelete(t *testing.T) {
+	t.Run("멤버십을 삭제한다.", func(t *testing.T) {
+		app := NewService(*NewRepository(map[string]Membership{}))
+		res, err := app.Create(CreateRequest{
+			UserName:       "jenny",
+			MembershipType: "naver",
+		})
+		assert.Nil(t, err)
+
+		deleteReq := DeleteRequest{ID: res.ID}
+
+		deleteRes, _ := app.Delete(deleteReq)
+		assert.Equal(t, res.ID, deleteRes.ID)
+
+	})
+
+	t.Run("id를 입력하지 않았을 때 예외 처리한다.", func(t *testing.T) {
+		app := NewService(*NewRepository(map[string]Membership{}))
+		_, err := app.Create(CreateRequest{
+			UserName:       "jenny",
+			MembershipType: "naver",
+		})
+		assert.Nil(t, err)
+
+		deleteReq := DeleteRequest{ID: ""}
+		_, err = app.Delete(deleteReq)
+
+		if assert.Error(t, err) {
+			assert.Equal(t, ErrUserIDIsRequired, err)
+		}
+
+	})
+
+	t.Run("입력한 id가 존재하지 않을 때 예외 처리한다.", func(t *testing.T) {
+		app := NewService(*NewRepository(map[string]Membership{}))
+
+		_, err := app.Create(CreateRequest{
+			UserName:       "jenny",
+			MembershipType: "naver",
+		})
+		assert.Nil(t, err)
+
+		req := DeleteRequest{ID: "uuid"}
+
+		_, err = app.Delete(req)
+
+		if assert.Error(t, err) {
+			assert.Equal(t, ErrUserIDNotFound, err)
+		}
+	})
+}
