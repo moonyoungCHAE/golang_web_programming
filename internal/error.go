@@ -9,4 +9,5 @@ var (
 	ErrInvalidMembershipType    = errors.New("choose membership type : naver, payco, toss")
 	ErrUserIDNotFound           = errors.New("user id not found")
 	ErrUserIDIsRequired         = errors.New("user id is required")
+	ErrNotFoundMembership       = errors.New("not found membership")
 )

@@ -18,9 +18,13 @@ func (r *Repository) CreateMembership(m Membership) (Membership, error) {
 	return m, nil
 }
 
-func (r *Repository) GetMembershipByID(id string) (Membership, bool) {
-	membership, ok := r.data[id]
-	return membership, ok
+func (r *Repository) GetMembershipByID(id string) (Membership, error) {
+	for _, membership := range r.data {
+		if membership.ID == id {
+			return membership, nil
+		}
+	}
+	return Membership{}, ErrNotFoundMembership
 }
 
 func (r *Repository) UpdateMembership(m Membership) (Membership, error) {

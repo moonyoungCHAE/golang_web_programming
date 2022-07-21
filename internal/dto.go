@@ -31,3 +31,9 @@ type DeleteResponse struct {
 	UserName       string
 	MembershipType string
 }
+
+type GetResponse struct {
+	ID             string `json:"id"`
+	UserName       string `json:"user_name"`
+	MembershipType string `json:"membership_type"`
+}

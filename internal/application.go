@@ -63,7 +63,7 @@ func (app *Application) Delete(request DeleteRequest) (DeleteResponse, error) {
 	if request.ID == "" {
 		return DeleteResponse{}, ErrUserIDIsRequired
 	}
-	if _, ok := app.repository.GetMembershipByID(request.ID); !ok {
+	if _, err := app.repository.GetMembershipByID(request.ID); err != nil {
 		return DeleteResponse{}, ErrUserIDNotFound
 	}
 
