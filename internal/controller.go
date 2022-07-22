@@ -33,10 +33,21 @@ func (controller *Controller) Read(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
-func (controller *Controller) Update(c echo.Context) error {
-	return nil
+func (controller Controller) Update(c echo.Context) error {
+	var req UpdateRequest
+	err := c.Bind(&req)
+	if err != nil {
+		return echo.ErrInternalServerError
+	}
+	res, _ := controller.service.Update(req)
+	return c.JSON(res.Code, res)
 }
 
-func (controller *Controller) Delete(c echo.Context) error {
-	return nil
+func (controller Controller) Delete(c echo.Context) error {
+	id := c.Param("id")
+	res, err := controller.service.Delete(DeleteRequest{ID: id})
+	if err != nil {
+		return echo.ErrInternalServerError
+	}
+	return c.JSON(res.Code, res)
 }
