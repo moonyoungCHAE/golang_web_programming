@@ -25,6 +25,18 @@ func NewDefaultServer() *Server {
 
 func (s *Server) Run() {
 	e := echo.New()
+	// 관련 doc - https://echo.labstack.com/middleware/body-dump/
+	e.Use(middleware.BodyDump(func(c echo.Context, reqBody, resBody []byte) {
+		log.Println("Request URI: ", c.Request().RequestURI)
+		log.Println("Request Http Method: ", c.Request().Method)
+		if string(reqBody) != "" {
+			log.Println("Request Body: ", string(reqBody))
+		}
+		log.Println("Response Http Status Code: ", c.Response().Status)
+		if string(resBody) != "" {
+			log.Println("Response Body: ", string(resBody))
+		}
+	}))
 	s.Routes(e)
 	log.Fatal(e.Start(fmt.Sprintf(":%d", _defaultPort)))
 
